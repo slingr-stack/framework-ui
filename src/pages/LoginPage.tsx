@@ -24,7 +24,7 @@ export const LoginPage: React.FC = () => {
       await mockLogin(values.email);
       message.success('Login successful!');
       navigate('/dashboard');
-    } catch (error) {
+    } catch {
       message.error('Login failed. Please try again.');
     } finally {
       setLoading(false);

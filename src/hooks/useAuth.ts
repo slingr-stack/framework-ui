@@ -24,7 +24,7 @@ export const useAuth = () => {
     if (userStr) {
       try {
         user = JSON.parse(userStr);
-      } catch (e) {
+      } catch {
         // Invalid user data, clear it
         localStorage.removeItem('authUser');
       }

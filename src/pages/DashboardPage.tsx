@@ -25,7 +25,7 @@ export const DashboardPage: React.FC = () => {
       logout();
       message.success('Logged out successfully!');
       navigate('/login');
-    } catch (error) {
+    } catch {
       message.error('Logout failed');
     }
   };
