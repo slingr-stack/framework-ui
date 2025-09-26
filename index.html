@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Framework UI - React Tech Stack Alternatives</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .alternatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .alternative-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alternative-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .alternative-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+        }
+
+        .alternative-card.alt-1::before {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+
+        .alternative-card.alt-2::before {
+            background: linear-gradient(90deg, #1976d2, #0d47a1);
+        }
+
+        .alternative-card.alt-3::before {
+            background: linear-gradient(90deg, #1890ff, #096dd9);
+        }
+
+        .alternative-card.alt-4::before {
+            background: linear-gradient(90deg, #722ed1, #531dab);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .new-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .card-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-list li {
+            padding: 0.25rem 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .features-list li::before {
+            content: '✨';
+            margin-right: 0.5rem;
+        }
+
+        .performance-metrics {
+            display: flex;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .launch-button {
+            background: linear-gradient(45deg, #4f46e5, #3730a3);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .launch-button:hover {
+            background: linear-gradient(45deg, #3730a3, #312e81);
+            transform: translateY(-1px);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 3rem;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table h3 {
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .status-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-running {
+            background: #10b981;
+        }
+
+        .status-built {
+            background: #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .alternatives-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-metrics {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 Framework UI</h1>
+            <p>Four comprehensive React tech stack alternatives with authentication, design systems, and modern development practices</p>
+        </header>
+
+        <div class="comparison-table">
+            <h3>📊 Quick Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alternative</th>
+                        <th>Build Tool</th>
+                        <th>UI Framework</th>
+                        <th>API Client</th>
+                        <th>Dev Start</th>
+                        <th>Bundle Size</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Alt 1</strong> - Vite + Tailwind + Apollo</td>
+                        <td>Vite</td>
+                        <td>Tailwind CSS</td>
+                        <td>Apollo GraphQL</td>
+                        <td>~200ms</td>
+                        <td>366kb</td>
+                        <td><span class="status-icon status-running"></span>Ready</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Alt 2</strong> - Next.js + Material-UI + React Query</td>
+                        <td>Next.js</td>
+                        <td>Material-UI</td>
+                        <td>React Query + GraphQL</td>
+                        <td>~900ms</td>
+                        <td>156kb</td>
+                        <td><span class="status-icon status-running"></span>Ready</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Alt 3</strong> - CRA + Ant Design + Axios</td>
+                        <td>Create React App</td>
+                        <td>Ant Design</td>
+                        <td>Axios (REST)</td>
+                        <td>~3000ms</td>
+                        <td>255kb</td>
+                        <td><span class="status-icon status-running"></span>Ready</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Alt 4</strong> - Vite + Ant Design + Apollo</td>
+                        <td>Vite</td>
+                        <td>Ant Design</td>
+                        <td>Apollo GraphQL</td>
+                        <td>~200ms</td>
+                        <td>908kb</td>
+                        <td><span class="status-icon status-running"></span>Ready</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="alternatives-grid">
+            <!-- Alternative 1 -->
+            <a href="./alternatives/react-vite-tailwind-apollo/" class="alternative-card alt-1">
+                <div class="card-header">
+                    <h2 class="card-title">Alternative 1</h2>
+                </div>
+                <div class="tech-stack">
+                    <span class="tech-tag">Vite</span>
+                    <span class="tech-tag">Tailwind CSS</span>
+                    <span class="tech-tag">Apollo GraphQL</span>
+                </div>
+                <p class="card-description">
+                    Lightning-fast development with utility-first CSS and powerful GraphQL caching. Perfect for rapid prototyping and custom designs.
+                </p>
+                <ul class="features-list">
+                    <li>⚡ 200ms dev server start</li>
+                    <li>🎨 Utility-first CSS approach</li>
+                    <li>🚀 GraphQL with smart caching</li>
+                    <li>📱 Fully responsive design</li>
+                </ul>
+                <div class="performance-metrics">
+                    <div class="metric">
+                        <div class="metric-value">~200ms</div>
+                        <div class="metric-label">Dev Start</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">~2s</div>
+                        <div class="metric-label">Build Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">366kb</div>
+                        <div class="metric-label">Bundle Size</div>
+                    </div>
+                </div>
+                <button class="launch-button">Launch Alternative 1 →</button>
+            </a>
+
+            <!-- Alternative 2 -->
+            <a href="./alternatives/react-nextjs-mui-reactquery/" class="alternative-card alt-2">
+                <div class="card-header">
+                    <h2 class="card-title">Alternative 2</h2>
+                </div>
+                <div class="tech-stack">
+                    <span class="tech-tag">Next.js</span>
+                    <span class="tech-tag">Material-UI</span>
+                    <span class="tech-tag">React Query</span>
+                </div>
+                <p class="card-description">
+                    Production-ready with SSR/SSG capabilities and Material Design. Ideal for SEO-focused applications with professional UI.
+                </p>
+                <ul class="features-list">
+                    <li>🔥 Next.js with SSR/SSG</li>
+                    <li>🎯 Material Design components</li>
+                    <li>🔄 Powerful data fetching</li>
+                    <li>♿ Built-in accessibility</li>
+                </ul>
+                <div class="performance-metrics">
+                    <div class="metric">
+                        <div class="metric-value">~900ms</div>
+                        <div class="metric-label">Dev Start</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">~4s</div>
+                        <div class="metric-label">Build Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">156kb</div>
+                        <div class="metric-label">Bundle Size</div>
+                    </div>
+                </div>
+                <button class="launch-button">Launch Alternative 2 →</button>
+            </a>
+
+            <!-- Alternative 3 -->
+            <a href="./alternatives/react-cra-antd-relay/" class="alternative-card alt-3">
+                <div class="card-header">
+                    <h2 class="card-title">Alternative 3</h2>
+                </div>
+                <div class="tech-stack">
+                    <span class="tech-tag">Create React App</span>
+                    <span class="tech-tag">Ant Design</span>
+                    <span class="tech-tag">Axios</span>
+                </div>
+                <p class="card-description">
+                    Stable enterprise setup with comprehensive form handling and REST API integration. Great for data-heavy applications.
+                </p>
+                <ul class="features-list">
+                    <li>📦 Stable CRA foundation</li>
+                    <li>🐜 Enterprise UI components</li>
+                    <li>🌐 REST API with interceptors</li>
+                    <li>📊 Rich data display components</li>
+                </ul>
+                <div class="performance-metrics">
+                    <div class="metric">
+                        <div class="metric-value">~3000ms</div>
+                        <div class="metric-label">Dev Start</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">~45s</div>
+                        <div class="metric-label">Build Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">255kb</div>
+                        <div class="metric-label">Bundle Size</div>
+                    </div>
+                </div>
+                <button class="launch-button">Launch Alternative 3 →</button>
+            </a>
+
+            <!-- Alternative 4 -->
+            <a href="./alternatives/react-vite-antd-apollo/" class="alternative-card alt-4">
+                <div class="card-header">
+                    <h2 class="card-title">Alternative 4</h2>
+                    <span class="new-badge">NEW</span>
+                </div>
+                <div class="tech-stack">
+                    <span class="tech-tag">Vite</span>
+                    <span class="tech-tag">Ant Design</span>
+                    <span class="tech-tag">Apollo GraphQL</span>
+                </div>
+                <p class="card-description">
+                    Perfect balance of development speed and enterprise quality. Combines Vite's performance with Ant Design's professional components.
+                </p>
+                <ul class="features-list">
+                    <li>⚡ Lightning-fast Vite development</li>
+                    <li>🎨 Professional Ant Design UI</li>
+                    <li>🚀 GraphQL with smart caching</li>
+                    <li>💼 Enterprise-grade components</li>
+                </ul>
+                <div class="performance-metrics">
+                    <div class="metric">
+                        <div class="metric-value">~200ms</div>
+                        <div class="metric-label">Dev Start</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">~8s</div>
+                        <div class="metric-label">Build Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">908kb</div>
+                        <div class="metric-label">Bundle Size</div>
+                    </div>
+                </div>
+                <button class="launch-button">Launch Alternative 4 → ⭐</button>
+            </a>
+        </div>
+
+        <footer class="footer">
+            <p>🎯 Each alternative includes complete authentication flow, protected routing, and responsive design</p>
+            <p>Choose the stack that best fits your development needs and project requirements</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add click tracking for analytics
+        document.querySelectorAll('.alternative-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const altNumber = this.classList.contains('alt-1') ? '1' : 
+                                 this.classList.contains('alt-2') ? '2' : 
+                                 this.classList.contains('alt-3') ? '3' : '4';
+                console.log(`Navigating to Alternative ${altNumber}`);
+            });
+        });
+
+        // Add smooth scroll behavior for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>
