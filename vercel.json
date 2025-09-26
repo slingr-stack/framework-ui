@@ -20,22 +20,6 @@
   ],
   "routes": [
     {
-      "src": "/alternatives/react-vite-tailwind-apollo/(.*)",
-      "dest": "/alternatives/react-vite-tailwind-apollo/dist/$1"
-    },
-    {
-      "src": "/alternatives/react-vite-antd-apollo/(.*)",
-      "dest": "/alternatives/react-vite-antd-apollo/dist/$1"
-    },
-    {
-      "src": "/alternatives/react-nextjs-mui-reactquery/(.*)",
-      "dest": "/alternatives/react-nextjs-mui-reactquery/out/$1"
-    },
-    {
-      "src": "/alternatives/react-cra-antd-relay/(.*)",
-      "dest": "/alternatives/react-cra-antd-relay/build/$1"
-    },
-    {
       "src": "/alternatives/react-vite-tailwind-apollo/?$",
       "dest": "/alternatives/react-vite-tailwind-apollo/dist/index.html"
     },
@@ -50,6 +34,22 @@
     {
       "src": "/alternatives/react-cra-antd-relay/?$",
       "dest": "/alternatives/react-cra-antd-relay/build/index.html"
+    },
+    {
+      "src": "/alternatives/react-vite-tailwind-apollo/(.*)",
+      "dest": "/alternatives/react-vite-tailwind-apollo/dist/$1"
+    },
+    {
+      "src": "/alternatives/react-vite-antd-apollo/(.*)",
+      "dest": "/alternatives/react-vite-antd-apollo/dist/$1"
+    },
+    {
+      "src": "/alternatives/react-nextjs-mui-reactquery/(.*)",
+      "dest": "/alternatives/react-nextjs-mui-reactquery/out/$1"
+    },
+    {
+      "src": "/alternatives/react-cra-antd-relay/(.*)",
+      "dest": "/alternatives/react-cra-antd-relay/build/$1"
     }
   ]
 }
