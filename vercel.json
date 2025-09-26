@@ -11,7 +11,7 @@
     },
     {
       "src": "alternatives/react-nextjs-mui-reactquery/package.json",
-      "use": "@vercel/static"
+      "use": "@vercel/static-build"
     },
     {
       "src": "alternatives/react-cra-antd-relay/package.json",
