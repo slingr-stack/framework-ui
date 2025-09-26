@@ -58,10 +58,10 @@
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
-            text-decoration: none;
             color: inherit;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .alternative-card:hover {
@@ -279,6 +279,121 @@
                 flex-direction: column;
                 gap: 0.5rem;
             }
+
+            .modal-content {
+                margin: 5% auto;
+                width: 95%;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal h3 {
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .setup-steps {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .setup-steps h4 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .setup-steps ol {
+            color: #4b5563;
+            padding-left: 1rem;
+        }
+
+        .setup-steps li {
+            margin-bottom: 0.5rem;
+        }
+
+        .setup-steps code {
+            background: #e5e7eb;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
+        .github-link {
+            display: inline-block;
+            background: linear-gradient(45deg, #24292e, #586069);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .github-link:hover {
+            background: linear-gradient(45deg, #1a1e22, #4a5056);
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -346,7 +461,7 @@
 
         <div class="alternatives-grid">
             <!-- Alternative 1 -->
-            <a href="./alternatives/react-vite-tailwind-apollo/" class="alternative-card alt-1">
+            <div class="alternative-card alt-1" data-alternative="1">
                 <div class="card-header">
                     <h2 class="card-title">Alternative 1</h2>
                 </div>
@@ -378,11 +493,11 @@
                         <div class="metric-label">Bundle Size</div>
                     </div>
                 </div>
-                <button class="launch-button">Launch Alternative 1 →</button>
-            </a>
+                <button class="launch-button" onclick="openAlternative(1)">Launch Alternative 1 →</button>
+            </div>
 
             <!-- Alternative 2 -->
-            <a href="./alternatives/react-nextjs-mui-reactquery/" class="alternative-card alt-2">
+            <div class="alternative-card alt-2" data-alternative="2">
                 <div class="card-header">
                     <h2 class="card-title">Alternative 2</h2>
                 </div>
@@ -414,11 +529,11 @@
                         <div class="metric-label">Bundle Size</div>
                     </div>
                 </div>
-                <button class="launch-button">Launch Alternative 2 →</button>
-            </a>
+                <button class="launch-button" onclick="openAlternative(2)">Launch Alternative 2 →</button>
+            </div>
 
             <!-- Alternative 3 -->
-            <a href="./alternatives/react-cra-antd-relay/" class="alternative-card alt-3">
+            <div class="alternative-card alt-3" data-alternative="3">
                 <div class="card-header">
                     <h2 class="card-title">Alternative 3</h2>
                 </div>
@@ -450,11 +565,11 @@
                         <div class="metric-label">Bundle Size</div>
                     </div>
                 </div>
-                <button class="launch-button">Launch Alternative 3 →</button>
-            </a>
+                <button class="launch-button" onclick="openAlternative(3)">Launch Alternative 3 →</button>
+            </div>
 
             <!-- Alternative 4 -->
-            <a href="./alternatives/react-vite-antd-apollo/" class="alternative-card alt-4">
+            <div class="alternative-card alt-4" data-alternative="4">
                 <div class="card-header">
                     <h2 class="card-title">Alternative 4</h2>
                     <span class="new-badge">NEW</span>
@@ -487,8 +602,8 @@
                         <div class="metric-label">Bundle Size</div>
                     </div>
                 </div>
-                <button class="launch-button">Launch Alternative 4 → ⭐</button>
-            </a>
+                <button class="launch-button" onclick="openAlternative(4)">Launch Alternative 4 → ⭐</button>
+            </div>
         </div>
 
         <footer class="footer">
@@ -497,19 +612,155 @@
         </footer>
     </div>
 
+    <!-- Modal -->
+    <div id="alternativeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalTitle">Alternative Details</h3>
+            <p id="modalDescription">Loading...</p>
+            <div class="setup-steps">
+                <h4>🚀 Quick Setup</h4>
+                <ol id="modalSteps">
+                    <li>Loading...</li>
+                </ol>
+            </div>
+            <a id="modalGithubLink" href="#" class="github-link" target="_blank">
+                📂 View Source Code on GitHub
+            </a>
+        </div>
+    </div>
+
     <script>
+        // Alternative data
+        const alternatives = {
+            1: {
+                title: "Alternative 1: React + Vite + Tailwind CSS + Apollo GraphQL",
+                description: "Lightning-fast development with utility-first CSS and powerful GraphQL caching. Perfect for rapid prototyping and custom designs with maximum development speed.",
+                steps: [
+                    "Navigate to <code>alternatives/react-vite-tailwind-apollo/</code>",
+                    "Run <code>npm install</code> to install dependencies",
+                    "Run <code>npm run dev</code> to start the development server",
+                    "Open <code>http://localhost:5173</code> in your browser",
+                    "Login with any email and password to explore the app"
+                ],
+                github: "https://github.com/slingr-stack/framework-ui/tree/main/alternatives/react-vite-tailwind-apollo"
+            },
+            2: {
+                title: "Alternative 2: React + Next.js + Material-UI + React Query + GraphQL",
+                description: "Production-ready with SSR/SSG capabilities and Material Design. Ideal for SEO-focused applications with professional UI components and built-in accessibility.",
+                steps: [
+                    "Navigate to <code>alternatives/react-nextjs-mui-reactquery/</code>",
+                    "Run <code>npm install</code> to install dependencies",
+                    "Run <code>npm run dev</code> to start the development server",
+                    "Open <code>http://localhost:3000</code> in your browser",
+                    "Login with any email and password to explore the app"
+                ],
+                github: "https://github.com/slingr-stack/framework-ui/tree/main/alternatives/react-nextjs-mui-reactquery"
+            },
+            3: {
+                title: "Alternative 3: React + Create React App + Ant Design + Axios",
+                description: "Stable enterprise setup with comprehensive form handling and REST API integration. Great for data-heavy applications with rich display components.",
+                steps: [
+                    "Navigate to <code>alternatives/react-cra-antd-relay/</code>",
+                    "Run <code>npm install</code> to install dependencies",
+                    "Run <code>npm start</code> to start the development server",
+                    "Open <code>http://localhost:3000</code> in your browser",
+                    "Login with any email and password to explore the app"
+                ],
+                github: "https://github.com/slingr-stack/framework-ui/tree/main/alternatives/react-cra-antd-relay"
+            },
+            4: {
+                title: "Alternative 4: React + Vite + Ant Design + Apollo GraphQL ⭐",
+                description: "Perfect balance of development speed and enterprise quality. Combines Vite's performance with Ant Design's professional components and GraphQL's smart caching.",
+                steps: [
+                    "Navigate to <code>alternatives/react-vite-antd-apollo/</code>",
+                    "Run <code>npm install</code> to install dependencies",
+                    "Run <code>npm run dev</code> to start the development server",
+                    "Open <code>http://localhost:5173</code> in your browser",
+                    "Login with any email and password to explore the app"
+                ],
+                github: "https://github.com/slingr-stack/framework-ui/tree/main/alternatives/react-vite-antd-apollo"
+            }
+        };
+
+        // Modal functionality
+        const modal = document.getElementById('alternativeModal');
+        const closeBtn = document.getElementsByClassName('close')[0];
+
+        function openAlternative(altNumber) {
+            const alt = alternatives[altNumber];
+            if (!alt) return;
+
+            // Update modal content
+            document.getElementById('modalTitle').innerHTML = alt.title;
+            document.getElementById('modalDescription').innerHTML = alt.description;
+            
+            // Update steps
+            const stepsList = document.getElementById('modalSteps');
+            stepsList.innerHTML = alt.steps.map(step => `<li>${step}</li>`).join('');
+            
+            // Update GitHub link
+            document.getElementById('modalGithubLink').href = alt.github;
+            
+            // Show modal
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Analytics
+            console.log(`Opening Alternative ${altNumber} modal`);
+        }
+
+        // Close modal functionality
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
         // Add click tracking for analytics
         document.querySelectorAll('.alternative-card').forEach(card => {
             card.addEventListener('click', function(e) {
-                const altNumber = this.classList.contains('alt-1') ? '1' : 
-                                 this.classList.contains('alt-2') ? '2' : 
-                                 this.classList.contains('alt-3') ? '3' : '4';
-                console.log(`Navigating to Alternative ${altNumber}`);
+                // Only handle clicks if they're not on the button
+                if (!e.target.classList.contains('launch-button')) {
+                    const altNumber = this.dataset.alternative;
+                    if (altNumber) {
+                        openAlternative(parseInt(altNumber));
+                    }
+                }
             });
         });
 
         // Add smooth scroll behavior for better UX
         document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Show loading state and then reveal content
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add a subtle entrance animation
+            const cards = document.querySelectorAll('.alternative-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
     </script>
 </body>
 </html>
