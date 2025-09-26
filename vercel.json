@@ -1,3 +1,21 @@
 {
-  "version": 2
+  "version": 2,
+  "builds": [
+    {
+      "src": "alternatives/react-vite-tailwind-apollo/package.json",
+      "use": "@vercel/static-build"
+    },
+    {
+      "src": "alternatives/react-vite-antd-apollo/package.json", 
+      "use": "@vercel/static-build"
+    },
+    {
+      "src": "alternatives/react-nextjs-mui-reactquery/package.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "alternatives/react-cra-antd-relay/package.json",
+      "use": "@vercel/static-build"
+    }
+  ]
 }
