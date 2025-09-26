@@ -2,54 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "alternatives/react-vite-tailwind-apollo/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build"
-    },
-    {
-      "src": "alternatives/react-vite-antd-apollo/package.json", 
-      "use": "@vercel/static-build"
-    },
-    {
-      "src": "alternatives/react-nextjs-mui-reactquery/package.json",
-      "use": "@vercel/static-build"
-    },
-    {
-      "src": "alternatives/react-cra-antd-relay/package.json",
-      "use": "@vercel/static-build"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/alternatives/react-vite-tailwind-apollo/?$",
-      "dest": "/alternatives/react-vite-tailwind-apollo/dist/index.html"
-    },
-    {
-      "src": "/alternatives/react-vite-antd-apollo/?$",
-      "dest": "/alternatives/react-vite-antd-apollo/dist/index.html"
-    },
-    {
-      "src": "/alternatives/react-nextjs-mui-reactquery/?$",
-      "dest": "/alternatives/react-nextjs-mui-reactquery/out/index.html"
-    },
-    {
-      "src": "/alternatives/react-cra-antd-relay/?$",
-      "dest": "/alternatives/react-cra-antd-relay/build/index.html"
-    },
-    {
-      "src": "/alternatives/react-vite-tailwind-apollo/(.*)",
-      "dest": "/alternatives/react-vite-tailwind-apollo/dist/$1"
-    },
-    {
-      "src": "/alternatives/react-vite-antd-apollo/(.*)",
-      "dest": "/alternatives/react-vite-antd-apollo/dist/$1"
-    },
-    {
-      "src": "/alternatives/react-nextjs-mui-reactquery/(.*)",
-      "dest": "/alternatives/react-nextjs-mui-reactquery/out/$1"
-    },
-    {
-      "src": "/alternatives/react-cra-antd-relay/(.*)",
-      "dest": "/alternatives/react-cra-antd-relay/build/$1"
     }
   ]
 }

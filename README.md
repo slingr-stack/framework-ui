@@ -1,14 +1,15 @@
-# Alternative 4: React + Vite + Ant Design + Apollo GraphQL
+# Framework UI
 
-This implementation combines Vite's lightning-fast development experience with Ant Design's enterprise-grade components and Apollo GraphQL's powerful data management capabilities.
+Basic UI infrastructure built with modern web technologies to provide a flexible foundation for building UIs on top of backend applications.
 
 ## 🚀 Tech Stack
 
-- **React 18** with TypeScript
+- **React 19** with TypeScript
 - **Vite** - Lightning-fast build tool with HMR
 - **Ant Design v5** - Enterprise-grade UI component library
 - **Apollo Client** - Comprehensive GraphQL client with smart caching
-- **React Router v6** - Modern client-side routing
+- **React Router v7** - Modern client-side routing
+- **Vercel** - Production deployment platform
 
 ## ✨ Key Features
 
@@ -17,25 +18,42 @@ This implementation combines Vite's lightning-fast development experience with A
 - 🚀 **GraphQL power** - Smart caching, optimistic updates, offline support
 - 📱 **Responsive design** - Mobile-first approach with Ant Design's grid system
 - 🔐 **Complete authentication** - JWT-based auth with protected routes
-- 🎯 **Best of both worlds** - Modern tooling with proven enterprise UI
+- 🎯 **Flexible foundation** - Small building blocks for maximum UI flexibility
 
 ## 🏃‍♂️ Quick Start
+
+### Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Start development server
+# Start development server (accessible at http://localhost:5173)
 npm run dev
 
 # Build for production
 npm run build
+
+# Preview production build locally
+npm run preview
 ```
 
-## 🎯 Why This Combination?
+### Access URLs
 
-This alternative provides the **fastest development experience** while maintaining **enterprise-grade quality**:
+- **Development**: http://localhost:5173 (after running `npm run dev`)
+- **Production**: Deployed on Vercel (URL provided after deployment)
 
-- **Vite + Ant Design = Rapid Development** - Instant feedback with ready-to-use components
-- **Apollo GraphQL = Smart Data Management** - Intelligent caching and offline capabilities
-- **Enterprise Ready** - Proven at scale with accessible, consistent design
+### Demo Credentials
+
+The application includes a demo authentication system. You can log in with any email and password combination.
+
+## 🎯 Application Structure
+
+- **Login Page**: Professional authentication interface with form validation
+- **Dashboard Page**: Main application interface with user greeting and logout functionality
+- **Protected Routes**: Automatic redirection based on authentication status
+- **Apollo GraphQL**: Pre-configured client ready for API integration
+
+## 🔧 Development
+
+This implementation provides the basic infrastructure with small, flexible building blocks that allow for rapid UI development while maintaining enterprise-grade quality.
