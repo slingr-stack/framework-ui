@@ -2,6 +2,8 @@
 
 Basic UI infrastructure built with modern web technologies to provide a flexible foundation for building UIs on top of backend applications.
 
+Access URL: https://framework-ui.vercel.app/
+
 ## 🚀 Tech Stack
 
 - **React 19** with TypeScript
@@ -41,7 +43,7 @@ npm run preview
 ### Access URLs
 
 - **Development**: http://localhost:5173 (after running `npm run dev`)
-- **Production**: Deployed on Vercel (URL provided after deployment)
+- **Production**: Deployed on Vercel https://framework-ui.vercel.app/
 
 ### Demo Credentials
 
