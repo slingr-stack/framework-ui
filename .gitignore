@@ -1,11 +1,11 @@
 # Build outputs
-alternatives/*/dist/
-alternatives/*/build/
-alternatives/*/out/
-alternatives/*/.next/
+dist/
+build/
+out/
+.next/
 
 # Dependencies
-alternatives/*/node_modules/
+node_modules/
 
 # Logs
 *.log
