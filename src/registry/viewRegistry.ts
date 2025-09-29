@@ -4,7 +4,9 @@ import {
   LayoutOutlined,
   TableOutlined,
   DashboardOutlined,
-  FormOutlined
+  FormOutlined,
+  ProjectOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons';
 import type { ViewConfig, ViewComponent } from '../types/view';
 import { DashboardView } from '../views/DashboardView';
@@ -13,6 +15,8 @@ import { GraphQLView } from '../views/GraphQLView';
 import { FormView } from '../views/FormView';
 import { AntDesignLayoutView } from '../views/AntDesignLayoutView';
 import { GridView } from '../views/GridView';
+import { KanbanView } from '../views/KanbanView';
+import { DynamicFormView } from '../views/DynamicFormView';
 
 export interface ViewRegistryEntry {
   config: ViewConfig;
@@ -79,6 +83,26 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
       category: 'Slingr views'
     },
     component: GridView
+  },
+  'kanban-view': {
+    config: {
+      id: 'kanban-view',
+      title: 'Kanban view',
+      description: 'Card-based project management with drag-and-drop and filtering',
+      icon: AppstoreOutlined,
+      category: 'Slingr views'
+    },
+    component: KanbanView
+  },
+  'form-view': {
+    config: {
+      id: 'form-view',
+      title: 'Form view',
+      description: 'Dynamic forms with backend-driven field rules and validation',
+      icon: ProjectOutlined,
+      category: 'Slingr views'
+    },
+    component: DynamicFormView
   }
 };
 
