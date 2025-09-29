@@ -48,37 +48,7 @@ export const MainLayout: React.FC = () => {
     setIsCodeModalVisible(false);
   };
 
-  const getViewSourceCode = async (viewId: string): Promise<{ [filename: string]: string }> => {
-    // This is a simplified approach - in a real app, you might fetch from GitHub API or have a build-time solution
-    const sourceFiles: { [filename: string]: string } = {};
-    
-    try {
-      // Mapping of view IDs to their source files
-      const viewFileMap: { [key: string]: string[] } = {
-        dashboard: ['views/DashboardView.tsx'],
-        'ant-design': ['views/AntDesignShowcaseView.tsx'],
-        graphql: ['views/GraphQLView.tsx'],
-        forms: ['views/FormView.tsx'],
-      };
 
-      const files = viewFileMap[viewId] || [];
-      
-      // For demo purposes, we'll show placeholder code
-      // In a real implementation, you'd fetch the actual source
-      for (const file of files) {
-        sourceFiles[file] = `// Source code for ${file}\n// This would contain the actual implementation\n\n// Example:\nimport React from 'react';\nimport { ViewContainer } from '../components/ViewContainer';\n\nexport const ${currentView?.config.title?.replace(/[^a-zA-Z]/g, '')}View = ({ config }) => {\n  return (\n    <ViewContainer config={config}>\n      {/* Component implementation */}\n    </ViewContainer>\n  );\n};`;
-      }
-      
-      // Add layout and common files
-      sourceFiles['components/MainLayout.tsx'] = `// Main layout component with navigation\n// Contains sidebar navigation and routing logic`;
-      sourceFiles['components/ViewContainer.tsx'] = `// Reusable view container wrapper\n// Provides consistent header and styling`;
-      
-    } catch (error) {
-      console.error('Error fetching source code:', error);
-    }
-    
-    return sourceFiles;
-  };
 
   const renderMenuItems = () => {
     return categories.map(category => {

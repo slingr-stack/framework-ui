@@ -24,7 +24,7 @@ import {
   Cascader,
   Transfer
 } from 'antd';
-import type { TransferProps } from 'antd';
+import type { TransferProps, UploadProps } from 'antd';
 import { 
   InboxOutlined,
   UserOutlined,
@@ -148,11 +148,11 @@ export const FormView: ViewComponent = ({ config }) => {
     setTargetKeys(newTargetKeys as string[]);
   };
 
-  const uploadProps = {
+  const uploadProps: UploadProps = {
     name: 'file',
     multiple: true,
     action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-    onChange(info: { file: { status: string; name: string }; fileList: unknown[] }) {
+    onChange(info) {
       const { status } = info.file;
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
@@ -163,7 +163,7 @@ export const FormView: ViewComponent = ({ config }) => {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onDrop(e: { dataTransfer: { files: FileList } }) {
+    onDrop(e) {
       console.log('Dropped files', e.dataTransfer.files);
     },
   };
