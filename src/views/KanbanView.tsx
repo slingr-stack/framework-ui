@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Card, 
   Row, 
@@ -128,6 +128,11 @@ export const KanbanView: ViewComponent = ({ config }) => {
   const [advancedFilterVisible, setAdvancedFilterVisible] = useState(false);
   const [filterForm] = Form.useForm();
 
+  // Apply filters when quickFilters change
+  useEffect(() => {
+    applyFilters();
+  }, [quickFilters]);
+
   // Apply filters
   const applyFilters = () => {
     let filtered = [...columns];
@@ -169,14 +174,10 @@ export const KanbanView: ViewComponent = ({ config }) => {
 
   // Handle quick filter changes
   const handleQuickFilter = (filterKey: string) => {
-    const newQuickFilters = {
-      ...quickFilters,
-      [filterKey]: !quickFilters[filterKey]
-    };
-    setQuickFilters(newQuickFilters);
-    
-    // Apply filters after state update
-    setTimeout(() => applyFilters(), 0);
+    setQuickFilters(prev => ({
+      ...prev,
+      [filterKey]: !prev[filterKey as keyof typeof prev]
+    }));
   };
 
   // Handle advanced filter
