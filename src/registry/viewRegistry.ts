@@ -2,7 +2,6 @@ import {
   ApiOutlined, 
   BugOutlined,
   LayoutOutlined,
-  ExperimentOutlined,
   TableOutlined,
   DashboardOutlined,
   FormOutlined
@@ -27,7 +26,7 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
       title: 'API integration',
       description: 'Demonstration of Apollo GraphQL client integration and API calls',
       icon: ApiOutlined,
-      category: null // Top level item
+      category: undefined // Top level item
     },
     component: GraphQLView
   },
@@ -37,7 +36,7 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
       title: 'Ant design components',
       description: 'Comprehensive showcase of Ant Design component library',
       icon: BugOutlined,
-      category: null // Top level item
+      category: undefined // Top level item
     },
     component: AntDesignShowcaseView
   },
@@ -47,7 +46,7 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
       title: 'Ant design layout',
       description: 'Showcase of Ant Design layout components and patterns',
       icon: LayoutOutlined,
-      category: null // Top level item
+      category: undefined // Top level item
     },
     component: AntDesignLayoutView
   },
@@ -98,7 +97,7 @@ export const getViewsByCategory = (category: string): ViewRegistryEntry[] => {
 };
 
 export const getTopLevelViews = (): ViewRegistryEntry[] => {
-  return Object.values(viewRegistry).filter(entry => entry.config.category === null);
+  return Object.values(viewRegistry).filter(entry => entry.config.category === undefined);
 };
 
 export const getAllViews = (): ViewRegistryEntry[] => {

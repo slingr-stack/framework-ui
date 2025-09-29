@@ -1,10 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { 
   Table, 
   Card, 
   Input, 
   Select, 
-  DatePicker, 
   Button, 
   Space, 
   Tag, 
@@ -13,14 +12,9 @@ import {
   Drawer,
   Form,
   InputNumber,
-  Switch,
-  Typography,
-  Divider,
-  Tooltip,
-  Popover
+  Typography
 } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { 
   SearchOutlined, 
   FilterOutlined, 
@@ -35,8 +29,7 @@ import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
 
 const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface DataRecord {
   key: string;
@@ -77,7 +70,6 @@ const generateMockData = (): DataRecord[] => {
 export const GridView: ViewComponent = ({ config }) => {
   const [data] = useState<DataRecord[]>(generateMockData());
   const [filteredData, setFilteredData] = useState<DataRecord[]>(data);
-  const [loading, setLoading] = useState(false);
   const [advancedFilterVisible, setAdvancedFilterVisible] = useState(false);
   const [quickFilters, setQuickFilters] = useState<Record<string, boolean>>({
     activeOnly: false,
@@ -185,7 +177,12 @@ export const GridView: ViewComponent = ({ config }) => {
 
   // Column search function
   const getColumnSearchProps = (dataIndex: keyof DataRecord, title: string) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: {
+      setSelectedKeys: (keys: React.Key[]) => void;
+      selectedKeys: React.Key[];
+      confirm: () => void;
+      clearFilters?: () => void;
+    }) => (
       <div style={{ padding: 8 }}>
         <Input
           placeholder={`Search ${title}`}
@@ -217,7 +214,7 @@ export const GridView: ViewComponent = ({ config }) => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
-    onFilter: (value: any, record: DataRecord) =>
+    onFilter: (value: boolean | React.Key, record: DataRecord) =>
       record[dataIndex]
         ?.toString()
         .toLowerCase()
@@ -417,7 +414,6 @@ export const GridView: ViewComponent = ({ config }) => {
           <Table<DataRecord>
             columns={columns}
             dataSource={filteredData}
-            loading={loading}
             onChange={handleTableChange}
             pagination={{
               pageSize: 10,

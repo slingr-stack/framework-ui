@@ -26,7 +26,6 @@ import type { ViewComponent } from '../types/view';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Title, Text, Paragraph } = Typography;
-const { Link } = Anchor;
 
 export const AntDesignLayoutView: ViewComponent = ({ config }) => {
   const [drawerVisible, setDrawerVisible] = useState(false);

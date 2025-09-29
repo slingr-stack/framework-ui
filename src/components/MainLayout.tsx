@@ -52,7 +52,7 @@ export const MainLayout: React.FC = () => {
 
 
   const renderMenuItems = () => {
-    const result = [];
+    const result: React.ReactNode[] = [];
     
     // Add top-level views first
     topLevelViews.forEach(({ config }) => {
