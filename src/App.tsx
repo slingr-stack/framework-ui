@@ -4,7 +4,7 @@ import { ConfigProvider, theme } from 'antd';
 import { client } from './lib/apollo-client';
 import { useAuth } from './hooks/useAuth';
 import { LoginPage } from './pages/LoginPage';
-import { DashboardPage } from './pages/DashboardPage';
+import { MainLayout } from './components/MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -27,20 +27,33 @@ function App() {
             <Route 
               path="/login" 
               element={
-                isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
+                isAuthenticated ? <Navigate to="/views/dashboard" replace /> : <LoginPage />
               } 
             />
             <Route 
-              path="/dashboard" 
+              path="/views/:viewId" 
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <MainLayout />
                 </ProtectedRoute>
               } 
             />
             <Route 
+              path="/views" 
+              element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              } 
+            />
+            {/* Legacy dashboard route - redirect to new views structure */}
+            <Route 
+              path="/dashboard" 
+              element={<Navigate to="/views/dashboard" replace />} 
+            />
+            <Route 
               path="/" 
-              element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
+              element={<Navigate to={isAuthenticated ? "/views/dashboard" : "/login"} replace />} 
             />
           </Routes>
         </Router>
