@@ -43,7 +43,6 @@ import {
   Tree,
   Popconfirm,
   ColorPicker,
-  Drawer,
   Anchor,
   BackTop,
   Affix
@@ -58,29 +57,12 @@ import {
   DownloadOutlined,
   EditOutlined,
   DeleteOutlined,
-  CodeOutlined,
-  StarOutlined,
-  HeartOutlined,
-  LikeOutlined,
-  MessageOutlined,
-  ShareAltOutlined,
-  MoreOutlined,
-  BellOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  EyeOutlined,
-  SearchOutlined,
-  PlusOutlined,
-  MinusOutlined,
-  CloseOutlined,
-  CheckOutlined,
-  InfoCircleOutlined,
-  ExclamationCircleOutlined,
-  QuestionCircleOutlined,
-  WarningOutlined
+  CodeOutlined
 } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -140,7 +122,7 @@ const data = [
 // Component code examples for quick reference
 const componentCodeExamples = {
   'input-controls': `// Basic Input Components
-import { Input, Select } from 'antd';
+import { Input, Select, AutoComplete } from 'antd';
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -158,10 +140,21 @@ const { Option } = Select;
   <Option value="option1">Option 1</Option>
   <Option value="option2">Option 2</Option>
   <Option value="option3">Option 3</Option>
-</Select>`,
+</Select>
+
+// AutoComplete
+<AutoComplete
+  style={{ width: '100%' }}
+  placeholder="Type to search"
+  options={[
+    { value: 'Apple' },
+    { value: 'Banana' },
+    { value: 'Cherry' }
+  ]}
+/>`,
 
   'selection-controls': `// Selection Controls
-import { Checkbox, Radio, Switch, Slider } from 'antd';
+import { Checkbox, Radio, Switch, Slider, TreeSelect, DatePicker, TimePicker } from 'antd';
 
 // Checkbox Group
 <Checkbox.Group>
@@ -188,7 +181,24 @@ import { Checkbox, Radio, Switch, Slider } from 'antd';
 <Slider 
   marks={{ 0: '0°C', 26: '26°C', 37: '37°C', 100: '100°C' }}
   defaultValue={30}
-/>`,
+/>
+
+// TreeSelect
+<TreeSelect
+  style={{ width: '100%' }}
+  placeholder="Select item"
+  treeData={[
+    { title: 'Parent 1', value: 'parent1', children: [
+      { title: 'Child 1-1', value: 'child1-1' },
+      { title: 'Child 1-2', value: 'child1-2' }
+    ]},
+    { title: 'Parent 2', value: 'parent2' }
+  ]}
+/>
+
+// Date & Time Pickers
+<DatePicker style={{ width: '100%' }} placeholder="Select date" />
+<TimePicker style={{ width: '100%' }} placeholder="Select time" />`,
 
   'date-controls': `// Date and Time Controls
 import { DatePicker, TimePicker } from 'antd';
@@ -415,7 +425,104 @@ import { Steps, Breadcrumb, Pagination } from 'antd';
   showTotal={(total, range) => 
     \`\${range[0]}-\${range[1]} of \${total} items\`
   }
-/>`
+/>`,
+
+  'transfer-components': `// Transfer and Selection Components
+import { Transfer, ColorPicker } from 'antd';
+
+// Transfer Component
+<Transfer
+  dataSource={[
+    { key: '1', title: 'Item 1' },
+    { key: '2', title: 'Item 2' },
+    { key: '3', title: 'Item 3' }
+  ]}
+  targetKeys={['2']}
+  render={item => item.title}
+/>
+
+// Color Picker
+<ColorPicker defaultValue="#1677FF" />`,
+
+  'layout-display': `// Layout and Display Components
+import { Collapse, List } from 'antd';
+
+// Collapse Component
+<Collapse>
+  <Collapse.Panel header="Panel 1" key="1">
+    Content of panel 1
+  </Collapse.Panel>
+  <Collapse.Panel header="Panel 2" key="2">
+    Content of panel 2
+  </Collapse.Panel>
+</Collapse>
+
+// List Component
+<List
+  size="small"
+  dataSource={['Item 1', 'Item 2', 'Item 3']}
+  renderItem={item => <List.Item>{item}</List.Item>}
+/>`,
+
+  'media-stats': `// Media and Statistics Components
+import { Image, Statistic } from 'antd';
+
+// Image Component
+<Image
+  width={200}
+  src="https://via.placeholder.com/200x100"
+  fallback="data:image/png;base64,..."
+/>
+
+// Statistic Component
+<Statistic 
+  title="Account Balance (CNY)" 
+  value={112893} 
+  precision={2} 
+/>`,
+
+  'navigation-interaction': `// Navigation and Interaction Components
+import { Tree, Popconfirm, Button, message } from 'antd';
+
+// Tree Component
+<Tree
+  treeData={[
+    {
+      title: 'parent 1',
+      key: '0-0',
+      children: [
+        { title: 'child 1', key: '0-0-0' },
+        { title: 'child 2', key: '0-0-1' }
+      ],
+    },
+    { title: 'parent 2', key: '0-1' }
+  ]}
+/>
+
+// Popconfirm Component
+<Popconfirm 
+  title="Are you sure?" 
+  onConfirm={() => message.success('Confirmed!')}
+>
+  <Button>Delete</Button>
+</Popconfirm>`,
+
+  'utility-components': `// Utility Components
+import { Anchor, Affix, BackTop, Button } from 'antd';
+
+// Anchor Component
+<Anchor direction="horizontal">
+  <Anchor.Link href="#demo1" title="Basic demo" />
+  <Anchor.Link href="#demo2" title="Static demo" />
+</Anchor>
+
+// Affix Component
+<Affix offsetTop={10}>
+  <Button type="primary">Affixed Button</Button>
+</Affix>
+
+// BackTop Component
+<BackTop />`
 };
 
 export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
@@ -501,6 +608,18 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                         <Option value="option3">Option 3</Option>
                       </Select>
                     </div>
+                    <div>
+                      <Text strong>AutoComplete</Text>
+                      <AutoComplete
+                        style={{ width: '100%' }}
+                        placeholder="Type to search"
+                        options={[
+                          { value: 'Apple' },
+                          { value: 'Banana' },
+                          { value: 'Cherry' }
+                        ]}
+                      />
+                    </div>
                   </Space>
                 </ComponentCard>
               </Col>
@@ -542,6 +661,27 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                         onChange={setSliderValue}
                         marks={{ 0: '0°C', 26: '26°C', 37: '37°C', 100: '100°C' }}
                       />
+                    </div>
+                    <div>
+                      <Text strong>TreeSelect</Text>
+                      <TreeSelect
+                        style={{ width: '100%' }}
+                        placeholder="Select item"
+                        treeData={[
+                          { title: 'Parent 1', value: 'parent1', children: [
+                            { title: 'Child 1-1', value: 'child1-1' },
+                            { title: 'Child 1-2', value: 'child1-2' }
+                          ]},
+                          { title: 'Parent 2', value: 'parent2' }
+                        ]}
+                      />
+                    </div>
+                    <div>
+                      <Text strong>Date & Time</Text>
+                      <Space direction="vertical" style={{ width: '100%' }}>
+                        <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                        <TimePicker style={{ width: '100%' }} placeholder="Select time" />
+                      </Space>
                     </div>
                   </Space>
                 </ComponentCard>
@@ -757,6 +897,128 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
               </Col>
             </Row>
           </TabPane>
+
+          <TabPane tab="Advanced Components" key="4">
+            <Row gutter={[16, 16]}>
+              <Col xs={24} lg={12}>
+                <ComponentCard title="Data Transfer & Selection" codeKey="transfer-components">
+                  <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                    <div>
+                      <Text strong>Transfer</Text>
+                      <Transfer
+                        dataSource={[
+                          { key: '1', title: 'Item 1' },
+                          { key: '2', title: 'Item 2' },
+                          { key: '3', title: 'Item 3' }
+                        ]}
+                        targetKeys={['2']}
+                        render={item => item.title}
+                      />
+                    </div>
+                    <div>
+                      <Text strong>Color Picker</Text>
+                      <ColorPicker defaultValue="#1677FF" />
+                    </div>
+                  </Space>
+                </ComponentCard>
+              </Col>
+
+              <Col xs={24} lg={12}>
+                <ComponentCard title="Layout & Display" codeKey="layout-display">
+                  <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                    <div>
+                      <Text strong>Collapse</Text>
+                      <Collapse>
+                        <Collapse.Panel header="Panel 1" key="1">
+                          Content of panel 1
+                        </Collapse.Panel>
+                        <Collapse.Panel header="Panel 2" key="2">
+                          Content of panel 2
+                        </Collapse.Panel>
+                      </Collapse>
+                    </div>
+                    <div>
+                      <Text strong>List</Text>
+                      <List
+                        size="small"
+                        dataSource={['Item 1', 'Item 2', 'Item 3']}
+                        renderItem={item => <List.Item>{item}</List.Item>}
+                      />
+                    </div>
+                  </Space>
+                </ComponentCard>
+              </Col>
+
+              <Col xs={24} lg={12}>
+                <ComponentCard title="Media & Statistics" codeKey="media-stats">
+                  <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                    <div>
+                      <Text strong>Image</Text>
+                      <Image
+                        width={200}
+                        src="https://via.placeholder.com/200x100"
+                        fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1xnG4W+FgYxN"
+                      />
+                    </div>
+                    <div>
+                      <Text strong>Statistic</Text>
+                      <Statistic title="Account Balance (CNY)" value={112893} precision={2} />
+                    </div>
+                  </Space>
+                </ComponentCard>
+              </Col>
+
+              <Col xs={24} lg={12}>
+                <ComponentCard title="Navigation & Interaction" codeKey="navigation-interaction">
+                  <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                    <div>
+                      <Text strong>Tree</Text>
+                      <Tree
+                        treeData={[
+                          {
+                            title: 'parent 1',
+                            key: '0-0',
+                            children: [
+                              { title: 'child 1', key: '0-0-0' },
+                              { title: 'child 2', key: '0-0-1' }
+                            ],
+                          },
+                          { title: 'parent 2', key: '0-1' }
+                        ]}
+                      />
+                    </div>
+                    <div>
+                      <Text strong>Popconfirm</Text>
+                      <Popconfirm title="Are you sure?" onConfirm={() => message.success('Confirmed!')}>
+                        <Button>Delete</Button>
+                      </Popconfirm>
+                    </div>
+                  </Space>
+                </ComponentCard>
+              </Col>
+
+              <Col xs={24} lg={12}>
+                <ComponentCard title="Utility Components" codeKey="utility-components">
+                  <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                    <div>
+                      <Text strong>Anchor (Menu)</Text>
+                      <Anchor direction="horizontal">
+                        <Anchor.Link href="#components-anchor-demo-basic" title="Basic demo" />
+                        <Anchor.Link href="#components-anchor-demo-static" title="Static demo" />
+                      </Anchor>
+                    </div>
+                    <div style={{ height: 100, position: 'relative' }}>
+                      <Text strong>Affix & BackTop</Text>
+                      <Affix offsetTop={10}>
+                        <Button type="primary">Affixed Button</Button>
+                      </Affix>
+                      <BackTop />
+                    </div>
+                  </Space>
+                </ComponentCard>
+              </Col>
+            </Row>
+          </TabPane>
         </Tabs>
 
         <Modal
@@ -782,17 +1044,19 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
           ]}
           width={800}
         >
-          <pre style={{ 
-            background: '#f6f8fa', 
-            padding: 16, 
-            borderRadius: 8, 
-            overflow: 'auto',
-            maxHeight: '60vh',
-            fontSize: '13px',
-            lineHeight: '1.4'
-          }}>
-            <code>{selectedCodeExample}</code>
-          </pre>
+          <SyntaxHighlighter 
+            language="typescript"
+            style={tomorrow}
+            customStyle={{
+              maxHeight: '60vh',
+              fontSize: '13px',
+              lineHeight: '1.4',
+              borderRadius: '8px'
+            }}
+            showLineNumbers={true}
+          >
+            {selectedCodeExample}
+          </SyntaxHighlighter>
         </Modal>
       </div>
     </ViewContainer>
