@@ -30,7 +30,23 @@ import {
   Steps,
   Breadcrumb,
   Menu,
-  Tabs
+  Tabs,
+  AutoComplete,
+  DatePicker,
+  TimePicker,
+  Transfer,
+  TreeSelect,
+  Collapse,
+  List,
+  Image,
+  Statistic,
+  Tree,
+  Popconfirm,
+  ColorPicker,
+  Drawer,
+  Anchor,
+  BackTop,
+  Affix
 } from 'antd';
 import { 
   UploadOutlined, 
@@ -42,7 +58,26 @@ import {
   DownloadOutlined,
   EditOutlined,
   DeleteOutlined,
-  CodeOutlined
+  CodeOutlined,
+  StarOutlined,
+  HeartOutlined,
+  LikeOutlined,
+  MessageOutlined,
+  ShareAltOutlined,
+  MoreOutlined,
+  BellOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  EyeOutlined,
+  SearchOutlined,
+  PlusOutlined,
+  MinusOutlined,
+  CloseOutlined,
+  CheckOutlined,
+  InfoCircleOutlined,
+  ExclamationCircleOutlined,
+  QuestionCircleOutlined,
+  WarningOutlined
 } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
