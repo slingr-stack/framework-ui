@@ -532,6 +532,24 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
   const [codeModalVisible, setCodeModalVisible] = useState(false);
   const [selectedCodeExample, setSelectedCodeExample] = useState('');
   const [selectedCodeTitle, setSelectedCodeTitle] = useState('');
+  const [autoCompleteOptions, setAutoCompleteOptions] = useState<{value: string}[]>([]);
+  const [autoCompleteValue, setAutoCompleteValue] = useState('');
+
+  const mockOptions = [
+    'Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew'
+  ];
+
+  const handleAutoCompleteSearch = (searchText: string) => {
+    setAutoCompleteValue(searchText);
+    if (searchText) {
+      const filtered = mockOptions
+        .filter(option => option.toLowerCase().includes(searchText.toLowerCase()))
+        .map(option => ({ value: option }));
+      setAutoCompleteOptions(filtered);
+    } else {
+      setAutoCompleteOptions([]);
+    }
+  };
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -612,12 +630,12 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                       <Text strong>AutoComplete</Text>
                       <AutoComplete
                         style={{ width: '100%' }}
-                        placeholder="Type to search"
-                        options={[
-                          { value: 'Apple' },
-                          { value: 'Banana' },
-                          { value: 'Cherry' }
-                        ]}
+                        placeholder="Type to search fruits"
+                        value={autoCompleteValue}
+                        options={autoCompleteOptions}
+                        onSearch={handleAutoCompleteSearch}
+                        onSelect={(value) => setAutoCompleteValue(value)}
+                        allowClear
                       />
                     </div>
                   </Space>

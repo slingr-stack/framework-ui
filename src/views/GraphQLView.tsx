@@ -28,6 +28,8 @@ import {
 } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const { Title, Paragraph } = Typography;
 
@@ -263,20 +265,20 @@ export const GraphQLView: ViewComponent = ({ config }) => {
               <Space direction="vertical" style={{ width: '100%' }} size="middle">
                 <div>
                   <Title level={5}>Client Configuration</Title>
-                  <Paragraph style={{ fontSize: 12, background: '#f5f5f5', padding: 8, borderRadius: 4 }}>
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`import { ApolloClient, InMemoryCache } from '@apollo/client';
+                  <SyntaxHighlighter language="typescript" style={tomorrow} showLineNumbers>
+{`import { ApolloClient, InMemoryCache } from '@apollo/client';
 
 const client = new ApolloClient({
   uri: 'your-graphql-endpoint',
   cache: new InMemoryCache()
-});`}</pre>
-                  </Paragraph>
+});`}
+                  </SyntaxHighlighter>
                 </div>
 
                 <div>
                   <Title level={5}>Query Example</Title>
-                  <Paragraph style={{ fontSize: 12, background: '#f5f5f5', padding: 8, borderRadius: 4 }}>
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`const { data, loading, error } = useQuery(gql\`
+                  <SyntaxHighlighter language="typescript" style={tomorrow} showLineNumbers>
+{`const { data, loading, error } = useQuery(gql\`
   query GetUsers {
     users {
       id
@@ -284,14 +286,14 @@ const client = new ApolloClient({
       email
     }
   }
-\`);`}</pre>
-                  </Paragraph>
+\`);`}
+                  </SyntaxHighlighter>
                 </div>
 
                 <div>
                   <Title level={5}>Mutation Example</Title>
-                  <Paragraph style={{ fontSize: 12, background: '#f5f5f5', padding: 8, borderRadius: 4 }}>
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`const [addUser] = useMutation(gql\`
+                  <SyntaxHighlighter language="typescript" style={tomorrow} showLineNumbers>
+{`const [addUser] = useMutation(gql\`
   mutation AddUser($name: String!, $email: String!) {
     addUser(name: $name, email: $email) {
       id
@@ -299,8 +301,8 @@ const client = new ApolloClient({
       email
     }
   }
-\`);`}</pre>
-                  </Paragraph>
+\`);`}
+                  </SyntaxHighlighter>
                 </div>
               </Space>
             </Card>

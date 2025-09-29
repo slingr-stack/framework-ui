@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Table, 
   Card, 
@@ -12,7 +12,11 @@ import {
   Drawer,
   Form,
   InputNumber,
-  Typography
+  Typography,
+  DatePicker,
+  AutoComplete,
+  Modal,
+  message
 } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { 
@@ -23,13 +27,40 @@ import {
   SettingOutlined,
   UserOutlined,
   CalendarOutlined,
-  DollarOutlined
+  DollarOutlined,
+  CodeOutlined
 } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const { Option } = Select;
 const { Text } = Typography;
+const { RangePicker } = DatePicker;
+
+interface DataRecord {
+  key: string;
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  role: string;
+  status: 'active' | 'inactive' | 'pending';
+  salary: number;
+  joinDate: string;
+  age: number;
+  location: string;
+}
+
+// Mock API delay function
+const mockApiCall = <T,>(data: T): Promise<T> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(data);
+    }, 1000);
+  });
+};
 
 interface DataRecord {
   key: string;
@@ -68,9 +99,11 @@ const generateMockData = (): DataRecord[] => {
 };
 
 export const GridView: ViewComponent = ({ config }) => {
-  const [data] = useState<DataRecord[]>(generateMockData());
-  const [filteredData, setFilteredData] = useState<DataRecord[]>(data);
+  const [data, setData] = useState<DataRecord[]>([]);
+  const [filteredData, setFilteredData] = useState<DataRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [advancedFilterVisible, setAdvancedFilterVisible] = useState(false);
+  const [codeModalVisible, setCodeModalVisible] = useState(false);
   const [quickFilters, setQuickFilters] = useState<Record<string, boolean>>({
     activeOnly: false,
     highSalary: false,
@@ -80,6 +113,41 @@ export const GridView: ViewComponent = ({ config }) => {
   
   // Advanced filter form
   const [filterForm] = Form.useForm();
+  
+  // Autocomplete options
+  const [departmentOptions, setDepartmentOptions] = useState<{value: string}[]>([]);
+  const [roleOptions, setRoleOptions] = useState<{value: string}[]>([]);
+
+  // Load initial data
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Apply filters when quickFilters change
+  useEffect(() => {
+    if (data.length > 0) {
+      applyAllFilters();
+    }
+  }, [quickFilters, data]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const mockData = await mockApiCall(generateMockData());
+      setData(mockData);
+      setFilteredData(mockData);
+      
+      // Extract unique values for autocomplete
+      const departments = [...new Set(mockData.map(item => item.department))];
+      const roles = [...new Set(mockData.map(item => item.role))];
+      setDepartmentOptions(departments.map(dept => ({ value: dept })));
+      setRoleOptions(roles.map(role => ({ value: role })));
+    } catch (error) {
+      message.error('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Quick filter functions
   const applyQuickFilters = (baseData: DataRecord[]) => {
@@ -106,17 +174,145 @@ export const GridView: ViewComponent = ({ config }) => {
     return result;
   };
 
+  const applyAllFilters = () => {
+    let result = [...data];
+    
+    // Apply quick filters
+    result = applyQuickFilters(result);
+    
+    // Apply advanced filters if any
+    const formValues = filterForm.getFieldsValue();
+    
+    if (formValues.name) {
+      result = result.filter(item => 
+        item.name.toLowerCase().includes(formValues.name.toLowerCase())
+      );
+    }
+    
+    if (formValues.departments?.length > 0) {
+      result = result.filter(item => formValues.departments.includes(item.department));
+    }
+    
+    if (formValues.statuses?.length > 0) {
+      result = result.filter(item => formValues.statuses.includes(item.status));
+    }
+    
+    if (formValues.salaryRange) {
+      const [min, max] = formValues.salaryRange;
+      if (min) result = result.filter(item => item.salary >= min);
+      if (max) result = result.filter(item => item.salary <= max);
+    }
+    
+    if (formValues.ageRange) {
+      const [min, max] = formValues.ageRange;
+      if (min) result = result.filter(item => item.age >= min);
+      if (max) result = result.filter(item => item.age <= max);
+    }
+    
+    if (formValues.dateRange) {
+      const [startDate, endDate] = formValues.dateRange;
+      if (startDate && endDate) {
+        result = result.filter(item => {
+          const itemDate = new Date(item.joinDate);
+          return itemDate >= startDate.toDate() && itemDate <= endDate.toDate();
+        });
+      }
+    }
+    
+    setFilteredData(result);
+  };
+
   // Apply quick filter
   const handleQuickFilter = (filterKey: string) => {
-    const newQuickFilters = {
-      ...quickFilters,
-      [filterKey]: !quickFilters[filterKey]
-    };
-    setQuickFilters(newQuickFilters);
-    
-    // Apply all quick filters
-    const filtered = applyQuickFilters(data);
-    setFilteredData(filtered);
+    setQuickFilters(prev => ({
+      ...prev,
+      [filterKey]: !prev[filterKey]
+    }));
+  };
+
+  // Refresh data
+  const handleRefresh = () => {
+    loadData();
+    setQuickFilters({
+      activeOnly: false,
+      highSalary: false,
+      recentJoiners: false,
+      managers: false
+    });
+    filterForm.resetFields();
+  };
+
+  // Autocomplete search for departments
+  const handleDepartmentSearch = (searchText: string) => {
+    if (searchText) {
+      const filtered = [...new Set(data.map(item => item.department))]
+        .filter(dept => dept.toLowerCase().includes(searchText.toLowerCase()))
+        .map(dept => ({ value: dept }));
+      setDepartmentOptions(filtered);
+    } else {
+      const allDepartments = [...new Set(data.map(item => item.department))];
+      setDepartmentOptions(allDepartments.map(dept => ({ value: dept })));
+    }
+  };
+
+  // Code viewing
+  const gridViewCode = `// Grid View with Advanced Filtering
+import { Table, Input, Select, Button, DatePicker, AutoComplete } from 'antd';
+import { useState, useEffect } from 'react';
+
+const GridView = () => {
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [quickFilters, setQuickFilters] = useState({
+    activeOnly: false,
+    highSalary: false,
+    recentJoiners: false,
+    managers: false
+  });
+
+  // Load data with API simulation
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/users');
+      const users = await response.json();
+      setData(users);
+      setFilteredData(users);
+    } catch (error) {
+      console.error('Failed to load data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Quick filter handler
+  const handleQuickFilter = (filterKey) => {
+    setQuickFilters(prev => ({
+      ...prev,
+      [filterKey]: !prev[filterKey]
+    }));
+  };
+
+  // Apply filters with useEffect
+  useEffect(() => {
+    if (data.length > 0) {
+      applyAllFilters();
+    }
+  }, [quickFilters, data]);
+
+  return (
+    <Table
+      columns={columns}
+      dataSource={filteredData}
+      loading={loading}
+      pagination={{ pageSize: 10 }}
+    />
+  );
+};`;
+
+  const showCodeModal = () => {
+    setCodeModalVisible(true);
   };
 
   // Advanced filter submit

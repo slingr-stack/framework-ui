@@ -11,7 +11,9 @@ import {
   Drawer, 
   Affix,
   BackTop,
-  Anchor
+  Anchor,
+  Button,
+  Modal
 } from 'antd';
 import { 
   HomeOutlined, 
@@ -19,16 +21,142 @@ import {
   UpOutlined,
   MenuOutlined,
   SettingOutlined,
-  FileOutlined
+  FileOutlined,
+  CodeOutlined
 } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Title, Text, Paragraph } = Typography;
 
 export const AntDesignLayoutView: ViewComponent = ({ config }) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [codeModalVisible, setCodeModalVisible] = useState(false);
+  const [selectedCodeExample, setSelectedCodeExample] = useState('');
+  const [selectedCodeTitle, setSelectedCodeTitle] = useState('');
+
+  const layoutCodeExamples = {
+    'basic-layout': `// Basic Layout Structure
+import { Layout } from 'antd';
+const { Header, Content, Footer, Sider } = Layout;
+
+<Layout style={{ minHeight: '100vh' }}>
+  <Header style={{ 
+    background: '#001529', 
+    color: 'white', 
+    padding: '0 24px',
+    display: 'flex',
+    alignItems: 'center'
+  }}>
+    <h1 style={{ color: 'white', margin: 0 }}>My App</h1>
+  </Header>
+  <Layout>
+    <Sider width={200} style={{ background: '#fff' }}>
+      <Menu mode="inline" defaultSelectedKeys={['1']}>
+        <Menu.Item key="1">Navigation One</Menu.Item>
+        <Menu.Item key="2">Navigation Two</Menu.Item>
+      </Menu>
+    </Sider>
+    <Content style={{ padding: '24px', background: '#fff' }}>
+      Main content area
+    </Content>
+  </Layout>
+  <Footer style={{ textAlign: 'center' }}>
+    My App ©2024
+  </Footer>
+</Layout>`,
+
+    'breadcrumb': `// Breadcrumb Navigation
+import { Breadcrumb } from 'antd';
+import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+
+<Breadcrumb>
+  <Breadcrumb.Item href="/">
+    <HomeOutlined />
+  </Breadcrumb.Item>
+  <Breadcrumb.Item href="/users">
+    <UserOutlined />
+    <span>Users</span>
+  </Breadcrumb.Item>
+  <Breadcrumb.Item>Profile</Breadcrumb.Item>
+</Breadcrumb>`,
+
+    'menu': `// Menu Component
+import { Menu } from 'antd';
+import { HomeOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
+
+<Menu mode="vertical" defaultSelectedKeys={['home']}>
+  <Menu.Item key="home" icon={<HomeOutlined />}>
+    Home
+  </Menu.Item>
+  <Menu.SubMenu key="users" icon={<UserOutlined />} title="Users">
+    <Menu.Item key="user-list">User List</Menu.Item>
+    <Menu.Item key="user-profile">User Profile</Menu.Item>
+  </Menu.SubMenu>
+  <Menu.Item key="settings" icon={<SettingOutlined />}>
+    Settings
+  </Menu.Item>
+</Menu>`,
+
+    'drawer': `// Drawer Component
+import { Drawer, Button } from 'antd';
+import { useState } from 'react';
+
+const [visible, setVisible] = useState(false);
+
+<Button type="primary" onClick={() => setVisible(true)}>
+  Open Drawer
+</Button>
+<Drawer
+  title="Navigation Menu"
+  placement="left"
+  onClose={() => setVisible(false)}
+  open={visible}
+>
+  <p>Drawer content goes here...</p>
+</Drawer>`,
+
+    'anchor-affix': `// Anchor and Affix Components
+import { Anchor, Affix, BackTop } from 'antd';
+
+// Anchor Navigation
+<Anchor direction="horizontal">
+  <Anchor.Link href="#section1" title="Section 1" />
+  <Anchor.Link href="#section2" title="Section 2" />
+  <Anchor.Link href="#section3" title="Section 3" />
+</Anchor>
+
+// Affix (Sticky positioning)
+<Affix offsetTop={10}>
+  <Button type="primary">Sticky Button</Button>
+</Affix>
+
+// Back to Top
+<BackTop />
+<div style={{ height: 2000 }}>
+  Scroll down to see BackTop button
+</div>`
+  };
+
+  const showCodeExample = (codeKey: string, title: string) => {
+    setSelectedCodeExample(layoutCodeExamples[codeKey as keyof typeof layoutCodeExamples] || 'Code example not found');
+    setSelectedCodeTitle(title);
+    setCodeModalVisible(true);
+  };
+
+  const CodeButton = ({ codeKey, title }: { codeKey: string; title: string }) => (
+    <Button 
+      type="text" 
+      size="small" 
+      icon={<CodeOutlined />}
+      onClick={() => showCodeExample(codeKey, title)}
+    >
+      Code
+    </Button>
+  );
 
   const menuItems = [
     {
@@ -63,7 +191,11 @@ export const AntDesignLayoutView: ViewComponent = ({ config }) => {
         <Row gutter={[16, 16]}>
           {/* Basic Layout */}
           <Col span={24}>
-            <Card title="Basic Layout Components" style={{ marginBottom: 16 }}>
+            <Card 
+              title="Basic Layout Components" 
+              style={{ marginBottom: 16 }}
+              extra={<CodeButton codeKey="basic-layout" title="Basic Layout Components" />}
+            >
               <Layout style={{ minHeight: 200, background: '#f0f2f5' }}>
                 <Header style={{ background: '#001529', color: 'white', display: 'flex', alignItems: 'center' }}>
                   <Title level={4} style={{ color: 'white', margin: 0 }}>Header</Title>
@@ -89,7 +221,11 @@ export const AntDesignLayoutView: ViewComponent = ({ config }) => {
 
           {/* Navigation Components */}
           <Col xs={24} lg={12}>
-            <Card title="Breadcrumb Navigation" style={{ marginBottom: 16 }}>
+            <Card 
+              title="Breadcrumb Navigation" 
+              style={{ marginBottom: 16 }}
+              extra={<CodeButton codeKey="breadcrumb" title="Breadcrumb Navigation" />}
+            >
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Breadcrumb>
                   <Breadcrumb.Item href="">
@@ -112,7 +248,11 @@ export const AntDesignLayoutView: ViewComponent = ({ config }) => {
           </Col>
 
           <Col xs={24} lg={12}>
-            <Card title="Menu Component" style={{ marginBottom: 16 }}>
+            <Card 
+              title="Menu Component" 
+              style={{ marginBottom: 16 }}
+              extra={<CodeButton codeKey="menu" title="Menu Component" />}
+            >
               <Menu
                 mode="vertical"
                 defaultSelectedKeys={['home']}
@@ -125,7 +265,11 @@ export const AntDesignLayoutView: ViewComponent = ({ config }) => {
 
           {/* Responsive Features */}
           <Col xs={24} lg={12}>
-            <Card title="Drawer (Mobile Menu)" style={{ marginBottom: 16 }}>
+            <Card 
+              title="Drawer (Mobile Menu)" 
+              style={{ marginBottom: 16 }}
+              extra={<CodeButton codeKey="drawer" title="Drawer Component" />}
+            >
               <Space>
                 <MenuOutlined 
                   style={{ fontSize: 18, cursor: 'pointer' }} 
@@ -151,7 +295,11 @@ export const AntDesignLayoutView: ViewComponent = ({ config }) => {
           </Col>
 
           <Col xs={24} lg={12}>
-            <Card title="Anchor & BackTop" style={{ marginBottom: 16 }}>
+            <Card 
+              title="Anchor & BackTop" 
+              style={{ marginBottom: 16 }}
+              extra={<CodeButton codeKey="anchor-affix" title="Anchor & Affix Components" />}
+            >
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Anchor
                   direction="horizontal"
@@ -215,6 +363,24 @@ export const AntDesignLayoutView: ViewComponent = ({ config }) => {
           </Col>
         </Row>
       </div>
+
+      {/* Code Modal */}
+      <Modal
+        title={`Source Code - ${selectedCodeTitle}`}
+        open={codeModalVisible}
+        onCancel={() => setCodeModalVisible(false)}
+        footer={null}
+        width={800}
+        style={{ top: 20 }}
+      >
+        <SyntaxHighlighter 
+          language="typescript" 
+          style={tomorrow}
+          showLineNumbers
+        >
+          {selectedCodeExample}
+        </SyntaxHighlighter>
+      </Modal>
     </ViewContainer>
   );
 };
