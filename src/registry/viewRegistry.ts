@@ -1,15 +1,19 @@
 import { 
-  DashboardOutlined, 
-  ExperimentOutlined, 
   ApiOutlined, 
-  FormOutlined,
-  BugOutlined
+  BugOutlined,
+  LayoutOutlined,
+  ExperimentOutlined,
+  TableOutlined,
+  DashboardOutlined,
+  FormOutlined
 } from '@ant-design/icons';
 import type { ViewConfig, ViewComponent } from '../types/view';
 import { DashboardView } from '../views/DashboardView';
 import { AntDesignShowcaseView } from '../views/AntDesignShowcaseView';
 import { GraphQLView } from '../views/GraphQLView';
 import { FormView } from '../views/FormView';
+import { AntDesignLayoutView } from '../views/AntDesignLayoutView';
+import { GridView } from '../views/GridView';
 
 export interface ViewRegistryEntry {
   config: ViewConfig;
@@ -17,55 +21,65 @@ export interface ViewRegistryEntry {
 }
 
 export const viewRegistry: Record<string, ViewRegistryEntry> = {
+  'api-integration': {
+    config: {
+      id: 'api-integration',
+      title: 'API integration',
+      description: 'Demonstration of Apollo GraphQL client integration and API calls',
+      icon: ApiOutlined,
+      category: null // Top level item
+    },
+    component: GraphQLView
+  },
+  'ant-design-components': {
+    config: {
+      id: 'ant-design-components',
+      title: 'Ant design components',
+      description: 'Comprehensive showcase of Ant Design component library',
+      icon: BugOutlined,
+      category: null // Top level item
+    },
+    component: AntDesignShowcaseView
+  },
+  'ant-design-layout': {
+    config: {
+      id: 'ant-design-layout',
+      title: 'Ant design layout',
+      description: 'Showcase of Ant Design layout components and patterns',
+      icon: LayoutOutlined,
+      category: null // Top level item
+    },
+    component: AntDesignLayoutView
+  },
   dashboard: {
     config: {
       id: 'dashboard',
       title: 'Dashboard',
       description: 'Analytics and overview dashboard with statistics and progress indicators',
       icon: DashboardOutlined,
-      category: 'Analytics'
+      category: 'Samples'
     },
     component: DashboardView
   },
-  'ant-design': {
+  'complex-form': {
     config: {
-      id: 'ant-design',
-      title: 'Ant Design Components',
-      description: 'Comprehensive showcase of Ant Design component library',
-      icon: BugOutlined,
-      category: 'Components'
-    },
-    component: AntDesignShowcaseView
-  },
-  graphql: {
-    config: {
-      id: 'graphql',
-      title: 'GraphQL Integration',
-      description: 'Demonstration of Apollo GraphQL client integration and API calls',
-      icon: ApiOutlined,
-      category: 'API'
-    },
-    component: GraphQLView
-  },
-  forms: {
-    config: {
-      id: 'forms',
-      title: 'Forms & Data Entry',
+      id: 'complex-form',
+      title: 'Complex form',
       description: 'Complex forms with various input controls and validation',
       icon: FormOutlined,
-      category: 'Forms'
+      category: 'Samples'
     },
     component: FormView
   },
-  experiments: {
+  'grid-view': {
     config: {
-      id: 'experiments',
-      title: 'Experimental Features',
-      description: 'Showcase of experimental and advanced UI patterns',
-      icon: ExperimentOutlined,
-      category: 'Advanced'
+      id: 'grid-view',
+      title: 'Grid view',
+      description: 'Table with filtering capabilities and advanced controls',
+      icon: TableOutlined,
+      category: 'Slingr views'
     },
-    component: DashboardView // Placeholder for now
+    component: GridView
   }
 };
 
@@ -81,6 +95,10 @@ export const getViewCategories = (): string[] => {
 
 export const getViewsByCategory = (category: string): ViewRegistryEntry[] => {
   return Object.values(viewRegistry).filter(entry => entry.config.category === category);
+};
+
+export const getTopLevelViews = (): ViewRegistryEntry[] => {
+  return Object.values(viewRegistry).filter(entry => entry.config.category === null);
 };
 
 export const getAllViews = (): ViewRegistryEntry[] => {

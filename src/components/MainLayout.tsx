@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { viewRegistry, getViewCategories, getViewsByCategory } from '../registry/viewRegistry';
+import { viewRegistry, getViewCategories, getViewsByCategory, getTopLevelViews } from '../registry/viewRegistry';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -24,8 +24,9 @@ export const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isCodeModalVisible, setIsCodeModalVisible] = useState(false);
 
-  const currentView = viewId ? viewRegistry[viewId] : viewRegistry.dashboard;
+  const currentView = viewId ? viewRegistry[viewId] : viewRegistry['api-integration'];
   const categories = getViewCategories();
+  const topLevelViews = getTopLevelViews();
 
   const handleLogout = async () => {
     try {
@@ -51,7 +52,46 @@ export const MainLayout: React.FC = () => {
 
 
   const renderMenuItems = () => {
-    return categories.map(category => {
+    const result = [];
+    
+    // Add top-level views first
+    topLevelViews.forEach(({ config }) => {
+      result.push(
+        <div
+          key={config.id}
+          onClick={() => handleMenuClick(config.id)}
+          style={{
+            padding: '12px 16px',
+            margin: '4px 0',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            backgroundColor: currentView?.config.id === config.id ? '#e6f7ff' : 'transparent',
+            border: currentView?.config.id === config.id ? '1px solid #91d5ff' : '1px solid transparent',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            if (currentView?.config.id !== config.id) {
+              e.currentTarget.style.backgroundColor = '#f5f5f5';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (currentView?.config.id !== config.id) {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }
+          }}
+        >
+          <Space>
+            {config.icon && <config.icon style={{ color: '#1890ff' }} />}
+            <div style={{ fontWeight: currentView?.config.id === config.id ? 'bold' : 'normal' }}>
+              {config.title}
+            </div>
+          </Space>
+        </div>
+      );
+    });
+
+    // Add categories with sub-items
+    const categoryPanels = categories.map(category => {
       const views = getViewsByCategory(category);
       return (
         <Panel 
@@ -97,6 +137,25 @@ export const MainLayout: React.FC = () => {
         </Panel>
       );
     });
+
+    return (
+      <div>
+        {/* Top level items */}
+        {result}
+        
+        {/* Categorized items */}
+        {categoryPanels.length > 0 && (
+          <Collapse 
+            ghost 
+            defaultActiveKey={categories}
+            expandIconPosition="right"
+            style={{ marginTop: 8 }}
+          >
+            {categoryPanels}
+          </Collapse>
+        )}
+      </div>
+    );
   };
 
   const renderContent = () => {
@@ -202,16 +261,10 @@ export const MainLayout: React.FC = () => {
             overflowY: 'auto' 
           }}>
             {!collapsed ? (
-              <Collapse 
-                ghost 
-                defaultActiveKey={categories}
-                expandIconPosition="right"
-              >
-                {renderMenuItems()}
-              </Collapse>
+              renderMenuItems()
             ) : (
               <div>
-                {Object.values(viewRegistry).map(({ config }) => (
+                {[...topLevelViews, ...categories.flatMap(cat => getViewsByCategory(cat))].map(({ config }) => (
                   <Tooltip key={config.id} title={config.title} placement="right">
                     <div
                       onClick={() => handleMenuClick(config.id)}
