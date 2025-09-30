@@ -42,17 +42,21 @@ import type {
   ActionItem 
 } from '../components/slingr';
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text: AntText } = Typography;
 
 // Mock data for examples
 const mockUserData = {
+  id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   name: 'John Doe',
   email: 'john.doe@example.com',
   department: 'Engineering',
   salary: 85000,
   isActive: true,
-  joinDate: '2023-01-15',
-  projectCount: 12
+  joinDate: new Date('2023-01-15'),
+  projectCount: 12,
+  bio: '<p>Senior Software Engineer with <strong>5+ years</strong> of experience in web development.</p>',
+  rating: 4.8,
+  workDays: 22
 };
 
 const mockTableData = [
@@ -268,31 +272,76 @@ const codeExamples = {
   dataField: `// Data Field Component Example
 import { DataField } from '../components/slingr';
 
-// Basic usage
+// Basic readonly usage
 <DataField
   label="User Name"
   value="John Doe"
   type="text"
+  mode="readonly"
 />
 
-// With GraphQL binding (conceptual)
+// Email field with link functionality
 <DataField
   label="Email"
   value={user?.email}
   type="email"
-  loading={userLoading}
-  error={userError?.message}
+  mode="readonly"
   helpText="User's primary email address"
 />
 
-// Currency formatting
+// Money field with proper formatting
 <DataField
   label="Annual Salary"
   value={85000}
-  type="currency"
-  prefix="$"
-  layout="vertical"
-/>`,
+  type="money"
+  mode="readonly"
+/>
+
+// Editable mode examples
+<DataField
+  label="Full Name"
+  value={name}
+  type="text"
+  mode="editable"
+  onChange={(value) => setName(value as string)}
+/>
+
+// Boolean switch in editable mode
+<DataField
+  label="Active Status"
+  value={isActive}
+  type="boolean"
+  mode="editable"
+  onChange={(value) => setIsActive(value as boolean)}
+/>
+
+// Choice dropdown in editable mode
+<DataField
+  label="Department"
+  value={department}
+  type="choice"
+  mode="editable"
+  choices={[
+    { label: 'Engineering', value: 'engineering' },
+    { label: 'Design', value: 'design' },
+    { label: 'Marketing', value: 'marketing' }
+  ]}
+  onChange={(value) => setDepartment(value as string)}
+/>
+
+// DateTime picker in editable mode
+<DataField
+  label="Join Date"
+  value={joinDate}
+  type="datetime"
+  mode="editable"
+  onChange={(value) => setJoinDate(value as Date)}
+/>
+
+// All supported types:
+// Text types: 'text', 'uuid', 'email', 'html'
+// Number types: 'number', 'integer', 'decimal', 'money'
+// Other types: 'datetime', 'boolean', 'choice'`,
 
   actionButton: `// Action Button Component Example
 import { ActionButton } from '../components/slingr';
@@ -535,7 +584,8 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
                 <Title level={4}>🔗 Data Field</Title>
                 <Paragraph>
                   Displays a label and value with automatic GraphQL data binding. 
-                  Supports various data types and formatting options.
+                  Supports various data types (text, numbers, dates, booleans, choices) 
+                  with both readonly and editable modes.
                 </Paragraph>
               </Card>
             </Col>
@@ -596,11 +646,21 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
             <Paragraph>
               The Data Field component displays a label and value with automatic formatting 
               based on the data type. It supports GraphQL data binding with loading and error states.
+              The component can operate in readonly or editable mode, with proper input controls 
+              for each data type including text, numbers, dates, booleans, and choice fields.
             </Paragraph>
             
             <Title level={5}>Examples</Title>
             <Row gutter={[16, 16]}>
-              <Col xs={24} md={12}>
+              <Col xs={24} lg={12}>
+                <div style={{ marginBottom: 16 }}>
+                  <AntText strong>Readonly Mode (Default)</AntText>
+                </div>
+                <DataField
+                  label="UUID"
+                  value={mockUserData.id}
+                  type="uuid"
+                />
                 <DataField
                   label="User Name"
                   value={mockUserData.name}
@@ -618,12 +678,35 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
                   type="text"
                   prefix="🏢 "
                 />
+                <DataField
+                  label="HTML Bio"
+                  value={mockUserData.bio}
+                  type="html"
+                  layout="vertical"
+                />
               </Col>
-              <Col xs={24} md={12}>
+              <Col xs={24} lg={12}>
+                <div style={{ marginBottom: 16 }}>
+                  <AntText strong>Number Types & Others</AntText>
+                </div>
                 <DataField
                   label="Annual Salary"
                   value={mockUserData.salary}
-                  type="currency"
+                  type="money"
+                  layout="vertical"
+                />
+                <DataField
+                  label="Rating"
+                  value={mockUserData.rating}
+                  type="decimal"
+                  suffix="/5"
+                  layout="vertical"
+                />
+                <DataField
+                  label="Work Days"
+                  value={mockUserData.workDays}
+                  type="integer"
+                  suffix=" days"
                   layout="vertical"
                 />
                 <DataField
@@ -633,11 +716,68 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
                   layout="vertical"
                 />
                 <DataField
-                  label="Projects"
-                  value={mockUserData.projectCount}
-                  type="number"
-                  suffix=" projects"
+                  label="Join Date"
+                  value={mockUserData.joinDate}
+                  type="datetime"
                   layout="vertical"
+                />
+              </Col>
+            </Row>
+            
+            <div style={{ marginTop: 24, marginBottom: 16 }}>
+              <AntText strong>Editable Mode Examples</AntText>
+            </div>
+            <Row gutter={[16, 16]}>
+              <Col xs={24} lg={12}>
+                <DataField
+                  label="Edit Name"
+                  value={mockUserData.name}
+                  type="text"
+                  mode="editable"
+                  onChange={(value) => console.log('Name changed:', value)}
+                />
+                <DataField
+                  label="Edit Salary"
+                  value={mockUserData.salary}
+                  type="money"
+                  mode="editable"
+                  onChange={(value) => console.log('Salary changed:', value)}
+                />
+                <DataField
+                  label="Active Toggle"
+                  value={mockUserData.isActive}
+                  type="boolean"
+                  mode="editable"
+                  onChange={(value) => console.log('Status changed:', value)}
+                />
+              </Col>
+              <Col xs={24} lg={12}>
+                <DataField
+                  label="Department Choice"
+                  value="Engineering"
+                  type="choice"
+                  mode="editable"
+                  choices={[
+                    { label: 'Engineering', value: 'Engineering' },
+                    { label: 'Design', value: 'Design' },
+                    { label: 'Marketing', value: 'Marketing' },
+                    { label: 'Sales', value: 'Sales' }
+                  ]}
+                  onChange={(value) => console.log('Department changed:', value)}
+                />
+                <DataField
+                  label="Join Date"
+                  value={mockUserData.joinDate}
+                  type="datetime"
+                  mode="editable"
+                  onChange={(value) => console.log('Date changed:', value)}
+                />
+                <DataField
+                  label="Work Days"
+                  value={mockUserData.workDays}
+                  type="integer"
+                  mode="editable"
+                  onChange={(value) => console.log('Days changed:', value)}
                 />
               </Col>
             </Row>
