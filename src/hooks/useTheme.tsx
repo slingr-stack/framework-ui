@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { theme } from 'antd';
 
 export type ThemeType = 'light' | 'dark' | 'compact';
@@ -51,7 +51,17 @@ const themeConfigs: Record<ThemeType, ThemeConfig> = {
   },
 };
 
-export const useTheme = () => {
+interface ThemeContextType {
+  currentTheme: ThemeType;
+  changeTheme: (newTheme: ThemeType) => void;
+  getThemeConfig: (themeType?: ThemeType) => ThemeConfig;
+  getAvailableThemes: () => ThemeConfig[];
+  themeConfig: ThemeConfig;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>('light');
 
   useEffect(() => {
@@ -75,11 +85,25 @@ export const useTheme = () => {
     return Object.values(themeConfigs);
   };
 
-  return {
+  const value = {
     currentTheme,
     changeTheme,
     getThemeConfig,
     getAvailableThemes,
     themeConfig: getThemeConfig(),
   };
+
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
 };
