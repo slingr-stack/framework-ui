@@ -9,7 +9,7 @@ import {
   AppstoreOutlined
 } from '@ant-design/icons';
 import type { ViewConfig, ViewComponent } from '../types/view';
-import { DashboardView } from '../views/DashboardView';
+import { CustomDashboardView } from '../views/CustomDashboardView';
 import { AntDesignShowcaseView } from '../views/AntDesignShowcaseView';
 import { GraphQLView } from '../views/GraphQLView';
 import { FormView } from '../views/FormView';
@@ -57,12 +57,12 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
   dashboard: {
     config: {
       id: 'dashboard',
-      title: 'Dashboard',
-      description: 'Analytics and overview dashboard with statistics and progress indicators',
+      title: 'Custom dashboard',
+      description: 'Interactive analytics dashboard with model binding, API simulation, and real-time data visualization',
       icon: DashboardOutlined,
       category: 'Samples'
     },
-    component: DashboardView
+    component: CustomDashboardView
   },
   'complex-form': {
     config: {
