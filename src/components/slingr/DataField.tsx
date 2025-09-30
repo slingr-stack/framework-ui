@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Space, Tooltip, Input, Select, Switch, DatePicker, InputNumber } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const { Text } = Typography;
@@ -10,13 +10,17 @@ export interface DataFieldProps {
   /** Field label to display */
   label: string;
   /** Field value to display - can be bound to GraphQL data */
-  value?: string | number | boolean | Date | null;
+  value?: string | number | boolean | Date | Array<any> | null;
   /** Field type for proper formatting and representation */
-  type?: 'text' | 'uuid' | 'email' | 'html' | 'number' | 'integer' | 'decimal' | 'money' | 'datetime' | 'boolean' | 'choice';
+  type?: 'text' | 'uuid' | 'email' | 'html' | 'number' | 'integer' | 'decimal' | 'money' | 'datetime' | 'boolean' | 'choice' | 'relationship';
   /** Display mode - editable or readonly */
   mode?: 'editable' | 'readonly';
   /** Choice options for choice type fields */
   choices?: Array<{ label: string; value: string | number }>;
+  /** Relationship options for relationship type fields */
+  relationshipOptions?: Array<{ label: string; value: string | number; id?: string | number }>;
+  /** Whether the field supports multiple values (array) */
+  multiple?: boolean;
   /** Optional help text tooltip */
   helpText?: string;
   /** Whether to display in vertical or horizontal layout */
@@ -32,7 +36,7 @@ export interface DataFieldProps {
   /** Optional suffix for the value */
   suffix?: string;
   /** Callback when value changes in editable mode */
-  onChange?: (value: string | number | boolean | Date | null) => void;
+  onChange?: (value: string | number | boolean | Date | Array<any> | null) => void;
 }
 
 /**
@@ -47,6 +51,8 @@ export const DataField: React.FC<DataFieldProps> = ({
   type = 'text',
   mode = 'readonly',
   choices = [],
+  relationshipOptions = [],
+  multiple = false,
   helpText,
   layout = 'horizontal',
   style,
@@ -58,6 +64,28 @@ export const DataField: React.FC<DataFieldProps> = ({
 }) => {
   const formatReadonlyValue = (val: typeof value): string => {
     if (val === null || val === undefined) return '-';
+    
+    // Handle arrays (multi-valued fields)
+    if (Array.isArray(val)) {
+      if (val.length === 0) return '-';
+      
+      switch (type) {
+        case 'relationship':
+          const relationshipLabels = val.map(v => {
+            const option = relationshipOptions.find(opt => opt.value === v || opt.id === v);
+            return option ? option.label : String(v);
+          });
+          return relationshipLabels.join(', ');
+        case 'choice':
+          const choiceLabels = val.map(v => {
+            const choice = choices.find(c => c.value === v);
+            return choice ? choice.label : String(v);
+          });
+          return choiceLabels.join(', ');
+        default:
+          return val.map(v => String(v)).join(', ');
+      }
+    }
     
     switch (type) {
       case 'boolean':
@@ -85,6 +113,9 @@ export const DataField: React.FC<DataFieldProps> = ({
       case 'choice':
         const choice = choices.find(c => c.value === val);
         return choice ? choice.label : String(val);
+      case 'relationship':
+        const relationship = relationshipOptions.find(opt => opt.value === val || opt.id === val);
+        return relationship ? relationship.label : String(val);
       default:
         return String(val);
     }
@@ -92,7 +123,7 @@ export const DataField: React.FC<DataFieldProps> = ({
 
   const renderEditableField = () => {
     const commonProps = {
-      value,
+      value: Array.isArray(value) ? value : value,
       onChange,
       style: { width: '100%' },
       placeholder: helpText
@@ -109,10 +140,36 @@ export const DataField: React.FC<DataFieldProps> = ({
       
       case 'choice':
         return (
-          <Select {...commonProps} value={value as string | number}>
+          <Select 
+            {...commonProps} 
+            value={Array.isArray(value) ? value : value as string | number}
+            mode={multiple ? 'multiple' : undefined}
+            onChange={(val) => onChange?.(val)}
+          >
             {choices.map(choice => (
               <Option key={choice.value} value={choice.value}>
                 {choice.label}
+              </Option>
+            ))}
+          </Select>
+        );
+      
+      case 'relationship':
+        return (
+          <Select 
+            {...commonProps}
+            value={Array.isArray(value) ? value : value as string | number}
+            mode={multiple ? 'multiple' : undefined}
+            showSearch
+            filterOption={(input, option) =>
+              (option?.children as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+            suffixIcon={<SearchOutlined />}
+            onChange={(val) => onChange?.(val)}
+          >
+            {relationshipOptions.map(option => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
               </Option>
             ))}
           </Select>
@@ -193,12 +250,36 @@ export const DataField: React.FC<DataFieldProps> = ({
     const displayValue = formatReadonlyValue(value);
     const fullValue = `${prefix || ''}${displayValue}${suffix || ''}`;
     
-    if (type === 'email' && value) {
+    if (type === 'email' && value && !Array.isArray(value)) {
       return <a href={`mailto:${value}`}>{fullValue}</a>;
     }
     
-    if (type === 'html' && value) {
+    if (type === 'html' && value && !Array.isArray(value)) {
       return <div dangerouslySetInnerHTML={{ __html: String(value) }} />;
+    }
+
+    // Handle arrays (multi-valued fields) with tags
+    if (Array.isArray(value) && value.length > 0) {
+      return (
+        <Space wrap>
+          {value.map((item, index) => {
+            let displayItem = item;
+            if (type === 'relationship') {
+              const relationship = relationshipOptions.find(opt => opt.value === item || opt.id === item);
+              displayItem = relationship ? relationship.label : String(item);
+            } else if (type === 'choice') {
+              const choice = choices.find(c => c.value === item);
+              displayItem = choice ? choice.label : String(item);
+            }
+            
+            return (
+              <Text key={index} code style={{ backgroundColor: '#f0f0f0', padding: '2px 6px', borderRadius: '4px' }}>
+                {displayItem}
+              </Text>
+            );
+          })}
+        </Space>
+      );
     }
     
     return <Text>{fullValue}</Text>;

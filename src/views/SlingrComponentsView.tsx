@@ -12,35 +12,14 @@ import {
   Tabs
 } from 'antd';
 import type { TabsProps } from 'antd';
-import { 
-  CodeOutlined, 
-  EyeOutlined, 
-  EditOutlined, 
-  DeleteOutlined,
-  MailOutlined,
-  CheckCircleOutlined,
-  DownloadOutlined,
-  ReloadOutlined,
-  DatabaseOutlined
-} from '@ant-design/icons';
+import { CodeOutlined } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // Import Slingr components
-import { 
-  DataField, 
-  ActionButton, 
-  ActionsMenu, 
-  ModelForm, 
-  ModelTable 
-} from '../components/slingr';
-import type { 
-  ModelFormConfig, 
-  ModelTableConfig, 
-  ActionItem 
-} from '../components/slingr';
+import { DataField } from '../components/slingr';
 
 const { Title, Paragraph, Text: AntText } = Typography;
 
@@ -52,494 +31,216 @@ const mockUserData = {
   department: 'Engineering',
   salary: 85000,
   isActive: true,
-  joinDate: new Date('2023-01-15'),
+  joinDate: '2023-01-15',
   projectCount: 12,
   bio: '<p>Senior Software Engineer with <strong>5+ years</strong> of experience in web development.</p>',
   rating: 4.8,
-  workDays: 22
-};
-
-const mockTableData = [
-  {
-    key: '1',
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    department: 'Engineering',
-    salary: 85000,
-    status: 'active',
-    joinDate: '2023-01-15'
-  },
-  {
-    key: '2',
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    department: 'Design',
-    salary: 75000,
-    status: 'active',
-    joinDate: '2023-03-20'
-  },
-  {
-    key: '3',
-    id: 3,
-    name: 'Bob Johnson',
-    email: 'bob@example.com',
-    department: 'Marketing',
-    salary: 65000,
-    status: 'inactive',
-    joinDate: '2022-11-10'
-  }
-];
-
-const userFormConfig: ModelFormConfig = {
-  modelId: 'user',
-  title: 'User Information',
-  description: 'Edit user profile information',
-  mode: 'edit',
-  layout: { columns: 2 },
-  fields: [
-    {
-      id: 'name',
-      label: 'Full Name',
-      type: 'text',
-      required: true,
-      helpText: 'Enter the user\'s full name'
-    },
-    {
-      id: 'email',
-      label: 'Email Address',
-      type: 'email',
-      required: true,
-      validation: {
-        pattern: '^[^@]+@[^@]+\\.[^@]+$',
-        message: 'Please enter a valid email address'
-      }
-    },
-    {
-      id: 'department',
-      label: 'Department',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Engineering', value: 'engineering' },
-        { label: 'Design', value: 'design' },
-        { label: 'Marketing', value: 'marketing' },
-        { label: 'Sales', value: 'sales' }
-      ]
-    },
-    {
-      id: 'salary',
-      label: 'Annual Salary',
-      type: 'number',
-      validation: {
-        min: 30000,
-        max: 200000
-      }
-    },
-    {
-      id: 'isActive',
-      label: 'Active Status',
-      type: 'boolean',
-      defaultValue: true
-    },
-    {
-      id: 'joinDate',
-      label: 'Join Date',
-      type: 'date',
-      required: true
-    },
-    {
-      id: 'bio',
-      label: 'Biography',
-      type: 'textarea',
-      helpText: 'Brief description about the user'
-    }
+  workDays: 22,
+  manager: { id: 1, name: 'Jane Smith' },
+  skills: ['JavaScript', 'TypeScript', 'React'],
+  tags: ['frontend', 'backend', 'full-stack'],
+  customers: [
+    { id: 1, name: 'Acme Corp' },
+    { id: 2, name: 'Tech Solutions Inc' }
   ]
 };
 
-const tableConfig: ModelTableConfig = {
-  modelId: 'user',
-  title: 'Users',
-  rowSelection: true,
-  showBulkActions: true,
-  columns: [
-    {
-      id: 'name',
-      title: 'Name',
-      type: 'text',
-      sortable: true,
-      searchable: true
-    },
-    {
-      id: 'email',
-      title: 'Email',
-      type: 'email',
-      sortable: true,
-      searchable: true
-    },
-    {
-      id: 'department',
-      title: 'Department',
-      type: 'tag',
-      filterable: true,
-      filterOptions: [
-        { label: 'Engineering', value: 'Engineering' },
-        { label: 'Design', value: 'Design' },
-        { label: 'Marketing', value: 'Marketing' }
-      ]
-    },
-    {
-      id: 'salary',
-      title: 'Salary',
-      type: 'currency',
-      sortable: true
-    },
-    {
-      id: 'status',
-      title: 'Status',
-      type: 'tag',
-      render: (value) => (
-        <Tag color={value === 'active' ? 'green' : 'red'}>
-          {String(value).toUpperCase()}
-        </Tag>
-      )
-    }
-  ],
-  actions: [
-    {
-      key: 'view',
-      label: 'View',
-      icon: <EyeOutlined />,
-      onClick: (record) => console.log('View user:', record)
-    },
-    {
-      key: 'edit',
-      label: 'Edit',
-      icon: <EditOutlined />,
-      onClick: (record) => console.log('Edit user:', record)
-    },
-    {
-      key: 'delete',
-      label: 'Delete',
-      icon: <DeleteOutlined />,
-      danger: true,
-      onClick: (record) => console.log('Delete user:', record)
-    }
-  ],
-  bulkActions: [
-    {
-      key: 'activate',
-      label: 'Activate',
-      icon: <CheckCircleOutlined />,
-      onClick: (record) => console.log('Activate user:', record)
-    },
-    {
-      key: 'delete',
-      label: 'Delete',
-      icon: <DeleteOutlined />,
-      danger: true,
-      onClick: (record) => console.log('Delete user:', record)
-    }
-  ]
-};
-
-const userActions: ActionItem[] = [
-  {
-    key: 'send-welcome-email',
-    label: 'Send Welcome Email',
-    icon: <MailOutlined />,
-    params: { userId: 123, template: 'welcome' }
-  },
-  {
-    key: 'reset-password',
-    label: 'Reset Password',
-    icon: <EditOutlined />,
-    params: { userId: 123 }
-  },
-  {
-    key: 'deactivate-user',
-    label: 'Deactivate User',
-    icon: <DeleteOutlined />,
-    danger: true,
-    confirmMessage: 'Are you sure you want to deactivate this user?',
-    params: { userId: 123 }
-  }
+// Mock relationship options
+const mockManagers = [
+  { id: 1, label: 'Jane Smith', value: 1 },
+  { id: 2, label: 'Bob Johnson', value: 2 },
+  { id: 3, label: 'Sarah Wilson', value: 3 },
 ];
 
-// Code examples for each component
+const mockDepartments = [
+  { label: 'Engineering', value: 'engineering' },
+  { label: 'Design', value: 'design' },
+  { label: 'Marketing', value: 'marketing' },
+  { label: 'Sales', value: 'sales' }
+];
+
+const mockSkills = [
+  { id: 1, label: 'JavaScript', value: 'javascript' },
+  { id: 2, label: 'TypeScript', value: 'typescript' },
+  { id: 3, label: 'React', value: 'react' },
+  { id: 4, label: 'Node.js', value: 'nodejs' },
+  { id: 5, label: 'Python', value: 'python' },
+];
+
+const mockCustomers = [
+  { id: 1, label: 'Acme Corp', value: 1 },
+  { id: 2, label: 'Tech Solutions Inc', value: 2 },
+  { id: 3, label: 'Global Industries', value: 3 },
+  { id: 4, label: 'StartupCo', value: 4 },
+];
+
+// Code examples for the components
 const codeExamples = {
-  dataField: `// Data Field Component Example
+  dataField: `// Data Field Component - Comprehensive Examples
 import { DataField } from '../components/slingr';
 
-// Basic readonly usage
-<DataField
-  label="User Name"
-  value="John Doe"
-  type="text"
+// Text field types
+<DataField label="UUID" value="a1b2c3d4-e5f6-7890-abcd-ef1234567890" type="uuid" mode="readonly" />
+<DataField label="Name" value="John Doe" type="text" mode="editable" onChange={(value) => console.log(value)} />
+<DataField label="Tags" value={["frontend", "backend"]} type="text" mode="readonly" multiple />
+
+// Email field types
+<DataField label="Email" value="john@example.com" type="email" mode="readonly" />
+<DataField label="Email" value="john@example.com" type="email" mode="editable" onChange={(value) => console.log(value)} />
+<DataField label="Emails" value={["john@example.com", "jane@example.com"]} type="email" mode="readonly" multiple />
+
+// HTML field types  
+<DataField label="Bio" value="<p>Senior <strong>Engineer</strong></p>" type="html" mode="readonly" />
+<DataField label="Bio" value="<p>Senior <strong>Engineer</strong></p>" type="html" mode="editable" onChange={(value) => console.log(value)} />
+
+// Number field types
+<DataField label="Salary" value={85000} type="money" mode="readonly" />
+<DataField label="Salary" value={85000} type="money" mode="editable" onChange={(value) => console.log(value)} />
+<DataField label="Bonuses" value={[5000, 3000]} type="money" mode="readonly" multiple />
+
+<DataField label="Age" value={28} type="integer" mode="readonly" />
+<DataField label="Age" value={28} type="integer" mode="editable" onChange={(value) => console.log(value)} />
+
+<DataField label="Rating" value={4.8} type="decimal" mode="readonly" suffix="/5" />
+<DataField label="Rating" value={4.8} type="decimal" mode="editable" onChange={(value) => console.log(value)} />
+
+// DateTime field types
+<DataField label="Join Date" value={new Date()} type="datetime" mode="readonly" />
+<DataField label="Join Date" value={new Date()} type="datetime" mode="editable" onChange={(value) => console.log(value)} />
+<DataField label="Important Dates" value={[new Date(), new Date()]} type="datetime" mode="readonly" multiple />
+
+// Boolean field types
+<DataField label="Active" value={true} type="boolean" mode="readonly" />
+<DataField label="Active" value={true} type="boolean" mode="editable" onChange={(value) => console.log(value)} />
+
+// Choice field types
+<DataField 
+  label="Department" 
+  value="engineering" 
+  type="choice" 
   mode="readonly"
+  choices={[{label: 'Engineering', value: 'engineering'}]}
 />
-
-// Email field with link functionality
-<DataField
-  label="Email"
-  value={user?.email}
-  type="email"
+<DataField 
+  label="Department" 
+  value="engineering" 
+  type="choice" 
+  mode="editable"
+  choices={[{label: 'Engineering', value: 'engineering'}]}
+  onChange={(value) => console.log(value)}
+/>
+<DataField 
+  label="Skills" 
+  value={["javascript", "react"]} 
+  type="choice" 
   mode="readonly"
-  helpText="User's primary email address"
+  multiple
+  choices={[{label: 'JavaScript', value: 'javascript'}, {label: 'React', value: 'react'}]}
 />
 
-// Money field with proper formatting
-<DataField
-  label="Annual Salary"
-  value={85000}
-  type="money"
+// Relationship field types
+<DataField 
+  label="Manager" 
+  value={1} 
+  type="relationship" 
   mode="readonly"
+  relationshipOptions={[{id: 1, label: 'Jane Smith', value: 1}]}
 />
-
-// Editable mode examples
-<DataField
-  label="Full Name"
-  value={name}
-  type="text"
+<DataField 
+  label="Manager" 
+  value={1} 
+  type="relationship" 
   mode="editable"
-  onChange={(value) => setName(value as string)}
+  relationshipOptions={[{id: 1, label: 'Jane Smith', value: 1}]}
+  onChange={(value) => console.log(value)}
 />
-
-// Boolean switch in editable mode
-<DataField
-  label="Active Status"
-  value={isActive}
-  type="boolean"
-  mode="editable"
-  onChange={(value) => setIsActive(value as boolean)}
-/>
-
-// Choice dropdown in editable mode
-<DataField
-  label="Department"
-  value={department}
-  type="choice"
-  mode="editable"
-  choices={[
-    { label: 'Engineering', value: 'engineering' },
-    { label: 'Design', value: 'design' },
-    { label: 'Marketing', value: 'marketing' }
+<DataField 
+  label="Customers" 
+  value={[1, 2]} 
+  type="relationship" 
+  mode="readonly"
+  multiple
+  relationshipOptions={[
+    {id: 1, label: 'Acme Corp', value: 1},
+    {id: 2, label: 'Tech Solutions', value: 2}
   ]}
-  onChange={(value) => setDepartment(value as string)}
-/>
-
-// DateTime picker in editable mode
-<DataField
-  label="Join Date"
-  value={joinDate}
-  type="datetime"
-  mode="editable"
-  onChange={(value) => setJoinDate(value as Date)}
-/>
-
-// All supported types:
-// Text types: 'text', 'uuid', 'email', 'html'
-// Number types: 'number', 'integer', 'decimal', 'money'
-// Other types: 'datetime', 'boolean', 'choice'`,
-
-  actionButton: `// Action Button Component Example
-import { ActionButton } from '../components/slingr';
-
-// Basic action button
-<ActionButton
-  actionId="send-notification"
-  params={{ userId: 123, type: 'welcome' }}
-  type="primary"
-  icon={<MailOutlined />}
-  onSuccess={(result) => {
-    console.log('Action completed:', result);
-  }}
-  onError={(error) => {
-    console.error('Action failed:', error);
-  }}
->
-  Send Notification
-</ActionButton>
-
-// Dangerous action with confirmation
-<ActionButton
-  actionId="delete-user"
-  params={{ userId: 123 }}
-  danger
-  confirmAction
-  confirmMessage="This will permanently delete the user. Continue?"
-  icon={<DeleteOutlined />}
->
-  Delete User
-</ActionButton>`,
-
-  actionsMenu: `// Actions Menu Component Example
-import { ActionsMenu } from '../components/slingr';
-
-const actions = [
-  {
-    key: 'send-email',
-    label: 'Send Email',
-    icon: <MailOutlined />,
-    params: { userId: 123, template: 'welcome' }
-  },
-  {
-    key: 'reset-password', 
-    label: 'Reset Password',
-    icon: <EditOutlined />,
-    params: { userId: 123 }
-  },
-  {
-    key: 'deactivate',
-    label: 'Deactivate',
-    icon: <DeleteOutlined />,
-    danger: true,
-    confirmMessage: 'Deactivate this user?',
-    params: { userId: 123 }
-  }
-];
-
-<ActionsMenu
-  actions={actions}
-  buttonType="primary"
-  onSuccess={(actionId, result) => {
-    console.log(\`Action \${actionId} completed:, result);
-  }}
->
-  User Actions
-</ActionsMenu>`,
-
-  modelForm: `// Model Form Component Example
-import { ModelForm } from '../components/slingr';
-
-const formConfig = {
-  modelId: 'user',
-  title: 'User Information',
-  mode: 'edit',
-  layout: { columns: 2 },
-  fields: [
-    {
-      id: 'name',
-      label: 'Full Name',
-      type: 'text',
-      required: true
-    },
-    {
-      id: 'email',
-      label: 'Email',
-      type: 'email',
-      required: true,
-      validation: {
-        pattern: '^[^@]+@[^@]+\\\\.[^@]+$'
-      }
-    },
-    {
-      id: 'department',
-      label: 'Department',
-      type: 'select',
-      options: [
-        { label: 'Engineering', value: 'engineering' },
-        { label: 'Design', value: 'design' }
-      ]
-    },
-    {
-      id: 'isActive',
-      label: 'Active',
-      type: 'boolean',
-      dependencies: [{
-        field: 'department',
-        value: 'engineering',
-        action: 'show'
-      }]
-    }
-  ]
-};
-
-<ModelForm
-  config={formConfig}
-  initialValues={userData}
-  onSubmit={async (values) => {
-    // GraphQL mutation call
-    await updateUser({ variables: { id: userId, input: values } });
-  }}
-  onChange={(values) => {
-    console.log('Form values changed:', values);
-  }}
 />`,
 
-  modelTable: `// Model Table Component Example  
-import { ModelTable } from '../components/slingr';
+  allComponents: `// General Example - Using All Components Together
+import { DataField } from '../components/slingr';
 
-const tableConfig = {
-  modelId: 'user',
-  title: 'Users',
-  rowSelection: true,
-  showBulkActions: true,
-  columns: [
-    {
-      id: 'name',
-      title: 'Name', 
-      type: 'text',
-      sortable: true,
-      searchable: true
-    },
-    {
-      id: 'email',
-      title: 'Email',
-      type: 'email',
-      sortable: true
-    },
-    {
-      id: 'department',
-      title: 'Department',
-      type: 'tag',
-      filterable: true,
-      filterOptions: [
-        { label: 'Engineering', value: 'Engineering' }
-      ]
-    },
-    {
-      id: 'salary',
-      title: 'Salary',
-      type: 'currency',
-      sortable: true
-    }
-  ],
-  actions: [
-    {
-      key: 'edit',
-      label: 'Edit',
-      icon: <EditOutlined />,
-      onClick: (record) => editUser(record.id)
-    }
-  ],
-  bulkActions: [
-    {
-      key: 'delete',
-      label: 'Delete Selected',
-      danger: true,
-      onClick: (record) => deleteUser(record.id)
-    }
-  ]
-};
-
-<ModelTable
-  config={tableConfig}
-  dataSource={users}
-  loading={usersLoading}
-  total={totalUsers}
-  onRefresh={() => refetchUsers()}
-  onPaginationChange={(page, pageSize) => {
-    fetchUsers({ page, pageSize });
-  }}
-  onSortChange={(field, order) => {
-    fetchUsers({ sortBy: field, sortOrder: order });
-  }}
-  onFilterChange={(filters) => {
-    fetchUsers({ filters });
-  }}
-/>`
+const UserProfile = ({ user, onUserChange }) => {
+  return (
+    <div>
+      <h2>User Profile</h2>
+      
+      {/* Basic Information */}
+      <DataField label="ID" value={user.id} type="uuid" mode="readonly" />
+      <DataField 
+        label="Name" 
+        value={user.name} 
+        type="text" 
+        mode="editable" 
+        onChange={(value) => onUserChange({...user, name: value})}
+      />
+      <DataField 
+        label="Email" 
+        value={user.email} 
+        type="email" 
+        mode="editable"
+        onChange={(value) => onUserChange({...user, email: value})}
+      />
+      
+      {/* Employment Details */}
+      <DataField 
+        label="Department" 
+        value={user.department} 
+        type="choice" 
+        mode="editable"
+        choices={departmentOptions}
+        onChange={(value) => onUserChange({...user, department: value})}
+      />
+      <DataField 
+        label="Manager" 
+        value={user.managerId} 
+        type="relationship" 
+        mode="editable"
+        relationshipOptions={managerOptions}
+        onChange={(value) => onUserChange({...user, managerId: value})}
+      />
+      <DataField label="Salary" value={user.salary} type="money" mode="readonly" />
+      <DataField label="Join Date" value={user.joinDate} type="datetime" mode="readonly" />
+      
+      {/* Multi-valued fields */}
+      <DataField 
+        label="Skills" 
+        value={user.skills} 
+        type="relationship" 
+        mode="editable"
+        multiple
+        relationshipOptions={skillOptions}
+        onChange={(value) => onUserChange({...user, skills: value})}
+      />
+      <DataField 
+        label="Assigned Customers" 
+        value={user.customers} 
+        type="relationship" 
+        mode="readonly"
+        multiple
+        relationshipOptions={customerOptions}
+      />
+      
+      {/* Status */}
+      <DataField 
+        label="Active" 
+        value={user.isActive} 
+        type="boolean" 
+        mode="editable"
+        onChange={(value) => onUserChange({...user, isActive: value})}
+      />
+    </div>
+  );
+};`
 };
 
 export const SlingrComponentsView: ViewComponent = ({ config }) => {
@@ -566,74 +267,6 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
 
   const tabItems: TabsProps['items'] = [
     {
-      key: 'overview',
-      label: 'Overview',
-      children: (
-        <div>
-          <Alert
-            message="Slingr Components"
-            description="A collection of UI components built on top of Ant Design for seamless backend integration through GraphQL. These components provide automatic data binding, action handling, and form generation based on backend model definitions."
-            type="info"
-            showIcon
-            style={{ marginBottom: 24 }}
-          />
-          
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={12}>
-              <Card>
-                <Title level={4}>🔗 Data Field</Title>
-                <Paragraph>
-                  Displays a label and value with automatic GraphQL data binding. 
-                  Supports various data types (text, numbers, dates, booleans, choices) 
-                  with both readonly and editable modes.
-                </Paragraph>
-              </Card>
-            </Col>
-            
-            <Col xs={24} md={12}>
-              <Card>
-                <Title level={4}>⚡ Action Button</Title>
-                <Paragraph>
-                  Triggers backend actions through GraphQL mutations with loading states 
-                  and error handling.
-                </Paragraph>
-              </Card>
-            </Col>
-            
-            <Col xs={24} md={12}>
-              <Card>
-                <Title level={4}>📋 Actions Menu</Title>
-                <Paragraph>
-                  Dropdown menu containing multiple backend actions with confirmation 
-                  dialogs for dangerous operations.
-                </Paragraph>
-              </Card>
-            </Col>
-            
-            <Col xs={24} md={12}>
-              <Card>
-                <Title level={4}>📝 Model Form</Title>
-                <Paragraph>
-                  Dynamically generated forms based on backend model definitions with 
-                  automatic validation and field dependencies.
-                </Paragraph>
-              </Card>
-            </Col>
-            
-            <Col xs={24}>
-              <Card>
-                <Title level={4}>📊 Model Table</Title>
-                <Paragraph>
-                  Data tables with automatic GraphQL integration, featuring sorting, 
-                  filtering, pagination, and bulk actions.
-                </Paragraph>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      )
-    },
-    {
       key: 'datafield',
       label: 'Data Field',
       children: (
@@ -647,315 +280,241 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               The Data Field component displays a label and value with automatic formatting 
               based on the data type. It supports GraphQL data binding with loading and error states.
               The component can operate in readonly or editable mode, with proper input controls 
-              for each data type including text, numbers, dates, booleans, and choice fields.
+              for each data type including text, numbers, dates, booleans, choices, and relationships.
             </Paragraph>
             
-            <Title level={5}>Examples</Title>
-            <Row gutter={[16, 16]}>
-              <Col xs={24} lg={12}>
-                <div style={{ marginBottom: 16 }}>
-                  <AntText strong>Readonly Mode (Default)</AntText>
-                </div>
-                <DataField
-                  label="UUID"
-                  value={mockUserData.id}
-                  type="uuid"
-                />
-                <DataField
-                  label="User Name"
-                  value={mockUserData.name}
-                  type="text"
-                />
-                <DataField
-                  label="Email Address"
-                  value={mockUserData.email}
-                  type="email"
-                  helpText="Primary contact email"
-                />
-                <DataField
-                  label="Department"
-                  value={mockUserData.department}
-                  type="text"
-                  prefix="🏢 "
-                />
-                <DataField
-                  label="HTML Bio"
-                  value={mockUserData.bio}
-                  type="html"
-                  layout="vertical"
+            <Title level={5}>Field Type Examples</Title>
+            
+            {/* Text Types */}
+            <Title level={5}>Text Types</Title>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} lg={8}>
+                <AntText strong>Readonly Mode</AntText>
+                <DataField label="UUID" value={mockUserData.id} type="uuid" mode="readonly" />
+                <DataField label="Name" value={mockUserData.name} type="text" mode="readonly" />
+                <DataField label="Email" value={mockUserData.email} type="email" mode="readonly" />
+                <DataField label="Bio" value={mockUserData.bio} type="html" mode="readonly" layout="vertical" />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Editable Mode</AntText>
+                <DataField label="Name" value={mockUserData.name} type="text" mode="editable" onChange={(value) => console.log('Name:', value)} />
+                <DataField label="Email" value={mockUserData.email} type="email" mode="editable" onChange={(value) => console.log('Email:', value)} />
+                <DataField label="Bio" value="Simple bio text" type="html" mode="editable" layout="vertical" onChange={(value) => console.log('Bio:', value)} />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Multi-valued</AntText>
+                <DataField label="Tags" value={mockUserData.tags} type="text" mode="readonly" multiple />
+                <DataField label="Emails" value={[mockUserData.email, 'jane@example.com']} type="email" mode="readonly" multiple />
+              </Col>
+            </Row>
+
+            {/* Number Types */}
+            <Title level={5}>Number Types</Title>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} lg={8}>
+                <AntText strong>Readonly Mode</AntText>
+                <DataField label="Salary" value={mockUserData.salary} type="money" mode="readonly" />
+                <DataField label="Work Days" value={mockUserData.workDays} type="integer" mode="readonly" />
+                <DataField label="Rating" value={mockUserData.rating} type="decimal" mode="readonly" suffix="/5" />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Editable Mode</AntText>
+                <DataField label="Salary" value={mockUserData.salary} type="money" mode="editable" onChange={(value) => console.log('Salary:', value)} />
+                <DataField label="Work Days" value={mockUserData.workDays} type="integer" mode="editable" onChange={(value) => console.log('Work Days:', value)} />
+                <DataField label="Rating" value={mockUserData.rating} type="decimal" mode="editable" onChange={(value) => console.log('Rating:', value)} />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Multi-valued</AntText>
+                <DataField label="Bonuses" value={[5000, 3000, 2000]} type="money" mode="readonly" multiple />
+                <DataField label="Work History" value={[22, 20, 18]} type="integer" mode="readonly" multiple suffix=" days" />
+              </Col>
+            </Row>
+
+            {/* DateTime Types */}
+            <Title level={5}>DateTime Types</Title>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} lg={8}>
+                <AntText strong>Readonly Mode</AntText>
+                <DataField label="Join Date" value="2023-01-15" type="datetime" mode="readonly" />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Editable Mode</AntText>
+                <DataField label="Join Date" value="2023-01-15" type="datetime" mode="editable" onChange={(value) => console.log('Join Date:', value)} />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Multi-valued</AntText>
+                <DataField label="Key Dates" value={["2023-01-15", "2023-12-25"]} type="datetime" mode="readonly" multiple />
+              </Col>
+            </Row>
+
+            {/* Boolean Types */}
+            <Title level={5}>Boolean Types</Title>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} lg={8}>
+                <AntText strong>Readonly Mode</AntText>
+                <DataField label="Active Status" value={mockUserData.isActive} type="boolean" mode="readonly" />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Editable Mode</AntText>
+                <DataField label="Active Status" value={mockUserData.isActive} type="boolean" mode="editable" onChange={(value) => console.log('Active:', value)} />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Note</AntText>
+                <AntText type="secondary">Boolean fields don't support multi-valued mode</AntText>
+              </Col>
+            </Row>
+
+            {/* Choice Types */}
+            <Title level={5}>Choice Types</Title>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} lg={8}>
+                <AntText strong>Readonly Mode</AntText>
+                <DataField 
+                  label="Department" 
+                  value="engineering" 
+                  type="choice" 
+                  mode="readonly"
+                  choices={mockDepartments}
                 />
               </Col>
-              <Col xs={24} lg={12}>
-                <div style={{ marginBottom: 16 }}>
-                  <AntText strong>Number Types & Others</AntText>
-                </div>
-                <DataField
-                  label="Annual Salary"
-                  value={mockUserData.salary}
-                  type="money"
-                  layout="vertical"
+              <Col xs={24} lg={8}>
+                <AntText strong>Editable Mode</AntText>
+                <DataField 
+                  label="Department" 
+                  value="engineering" 
+                  type="choice" 
+                  mode="editable"
+                  choices={mockDepartments}
+                  onChange={(value) => console.log('Department:', value)}
                 />
-                <DataField
-                  label="Rating"
-                  value={mockUserData.rating}
-                  type="decimal"
-                  suffix="/5"
-                  layout="vertical"
-                />
-                <DataField
-                  label="Work Days"
-                  value={mockUserData.workDays}
-                  type="integer"
-                  suffix=" days"
-                  layout="vertical"
-                />
-                <DataField
-                  label="Active Status"
-                  value={mockUserData.isActive}
-                  type="boolean"
-                  layout="vertical"
-                />
-                <DataField
-                  label="Join Date"
-                  value={mockUserData.joinDate}
-                  type="datetime"
-                  layout="vertical"
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Multi-valued</AntText>
+                <DataField 
+                  label="Skills" 
+                  value={['javascript', 'react']} 
+                  type="choice" 
+                  mode="readonly"
+                  multiple
+                  choices={mockSkills}
                 />
               </Col>
             </Row>
-            
-            <div style={{ marginTop: 24, marginBottom: 16 }}>
-              <AntText strong>Editable Mode Examples</AntText>
-            </div>
-            <Row gutter={[16, 16]}>
-              <Col xs={24} lg={12}>
-                <DataField
-                  label="Edit Name"
-                  value={mockUserData.name}
-                  type="text"
+
+            {/* Relationship Types */}
+            <Title level={5}>Relationship Types</Title>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} lg={8}>
+                <AntText strong>Readonly Mode</AntText>
+                <DataField 
+                  label="Manager" 
+                  value={1} 
+                  type="relationship" 
+                  mode="readonly"
+                  relationshipOptions={mockManagers}
+                />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Editable Mode</AntText>
+                <DataField 
+                  label="Manager" 
+                  value={1} 
+                  type="relationship" 
                   mode="editable"
+                  relationshipOptions={mockManagers}
+                  onChange={(value) => console.log('Manager:', value)}
+                />
+              </Col>
+              <Col xs={24} lg={8}>
+                <AntText strong>Multi-valued</AntText>
+                <DataField 
+                  label="Customers" 
+                  value={[1, 2]} 
+                  type="relationship" 
+                  mode="readonly"
+                  multiple
+                  relationshipOptions={mockCustomers}
+                />
+              </Col>
+            </Row>
+          </Card>
+
+          {/* General Example */}
+          <Card 
+            title="General Example - Complete User Profile" 
+            extra={<CodeButton codeKey="allComponents" title="General Example" />}
+            style={{ marginBottom: 16 }}
+          >
+            <Paragraph>
+              This example shows how to use DataField components together to create a complete user profile 
+              interface with various field types and modes.
+            </Paragraph>
+            
+            <Row gutter={[24, 16]}>
+              <Col xs={24} lg={12}>
+                <Title level={5}>Basic Information</Title>
+                <DataField label="ID" value={mockUserData.id} type="uuid" mode="readonly" />
+                <DataField 
+                  label="Name" 
+                  value={mockUserData.name} 
+                  type="text" 
+                  mode="editable" 
                   onChange={(value) => console.log('Name changed:', value)}
                 />
-                <DataField
-                  label="Edit Salary"
-                  value={mockUserData.salary}
-                  type="money"
+                <DataField 
+                  label="Email" 
+                  value={mockUserData.email} 
+                  type="email" 
                   mode="editable"
-                  onChange={(value) => console.log('Salary changed:', value)}
+                  onChange={(value) => console.log('Email changed:', value)}
                 />
-                <DataField
-                  label="Active Toggle"
-                  value={mockUserData.isActive}
-                  type="boolean"
+                <DataField 
+                  label="Department" 
+                  value="engineering" 
+                  type="choice" 
                   mode="editable"
-                  onChange={(value) => console.log('Status changed:', value)}
+                  choices={mockDepartments}
+                  onChange={(value) => console.log('Department changed:', value)}
+                />
+                <DataField 
+                  label="Manager" 
+                  value={1} 
+                  type="relationship" 
+                  mode="editable"
+                  relationshipOptions={mockManagers}
+                  onChange={(value) => console.log('Manager changed:', value)}
                 />
               </Col>
               <Col xs={24} lg={12}>
-                <DataField
-                  label="Department Choice"
-                  value="Engineering"
-                  type="choice"
+                <Title level={5}>Employment Details</Title>
+                <DataField label="Salary" value={mockUserData.salary} type="money" mode="readonly" />
+                <DataField label="Join Date" value="2023-01-15" type="datetime" mode="readonly" />
+                <DataField 
+                  label="Skills" 
+                  value={['javascript', 'react']} 
+                  type="relationship" 
                   mode="editable"
-                  choices={[
-                    { label: 'Engineering', value: 'Engineering' },
-                    { label: 'Design', value: 'Design' },
-                    { label: 'Marketing', value: 'Marketing' },
-                    { label: 'Sales', value: 'Sales' }
-                  ]}
-                  onChange={(value) => console.log('Department changed:', value)}
+                  multiple
+                  relationshipOptions={mockSkills}
+                  onChange={(value) => console.log('Skills changed:', value)}
                 />
-                <DataField
-                  label="Join Date"
-                  value={mockUserData.joinDate}
-                  type="datetime"
-                  mode="editable"
-                  onChange={(value) => console.log('Date changed:', value)}
+                <DataField 
+                  label="Assigned Customers" 
+                  value={[1, 2]} 
+                  type="relationship" 
+                  mode="readonly"
+                  multiple
+                  relationshipOptions={mockCustomers}
                 />
-                <DataField
-                  label="Work Days"
-                  value={mockUserData.workDays}
-                  type="integer"
+                <DataField 
+                  label="Active" 
+                  value={mockUserData.isActive} 
+                  type="boolean" 
                   mode="editable"
-                  onChange={(value) => console.log('Days changed:', value)}
+                  onChange={(value) => console.log('Active changed:', value)}
                 />
               </Col>
             </Row>
-          </Card>
-        </div>
-      )
-    },
-    {
-      key: 'actionbutton',
-      label: 'Action Button',
-      children: (
-        <div>
-          <Card 
-            title="Action Button Component" 
-            extra={<CodeButton codeKey="actionButton" title="Action Button Component" />}
-            style={{ marginBottom: 16 }}
-          >
-            <Paragraph>
-              Action buttons trigger backend GraphQL mutations with automatic loading states, 
-              error handling, and optional confirmation dialogs.
-            </Paragraph>
-            
-            <Title level={5}>Examples</Title>
-            <Space wrap>
-              <ActionButton
-                actionId="send-notification"
-                params={{ userId: 123, type: 'welcome' }}
-                type="primary"
-                icon={<MailOutlined />}
-              >
-                Send Notification
-              </ActionButton>
-              
-              <ActionButton
-                actionId="export-data"
-                params={{ format: 'csv' }}
-                icon={<DownloadOutlined />}
-              >
-                Export Data
-              </ActionButton>
-              
-              <ActionButton
-                actionId="delete-user"
-                params={{ userId: 123 }}
-                danger
-                confirmAction
-                confirmMessage="This will permanently delete the user. Continue?"
-                icon={<DeleteOutlined />}
-              >
-                Delete User
-              </ActionButton>
-            </Space>
-          </Card>
-        </div>
-      )
-    },
-    {
-      key: 'actionsmenu',
-      label: 'Actions Menu',
-      children: (
-        <div>
-          <Card 
-            title="Actions Menu Component" 
-            extra={<CodeButton codeKey="actionsMenu" title="Actions Menu Component" />}
-            style={{ marginBottom: 16 }}
-          >
-            <Paragraph>
-              Actions menu provides a dropdown containing multiple backend actions. 
-              Supports dangerous action confirmation and loading states.
-            </Paragraph>
-            
-            <Title level={5}>Examples</Title>
-            <Space wrap>
-              <ActionsMenu
-                actions={userActions}
-                buttonType="primary"
-                onSuccess={(actionId, result) => {
-                  console.log(`Action ${actionId} completed:`, result);
-                }}
-              >
-                User Actions
-              </ActionsMenu>
-              
-              <ActionsMenu
-                actions={[
-                  {
-                    key: 'refresh-cache',
-                    label: 'Refresh Cache',
-                    icon: <ReloadOutlined />,
-                    params: { cacheKey: 'users' }
-                  },
-                  {
-                    key: 'backup-data',
-                    label: 'Backup Data',
-                    icon: <DatabaseOutlined />,
-                    params: { tables: ['users', 'projects'] }
-                  }
-                ]}
-                size="small"
-              >
-                System Actions
-              </ActionsMenu>
-            </Space>
-          </Card>
-        </div>
-      )
-    },
-    {
-      key: 'modelform',
-      label: 'Model Form',
-      children: (
-        <div>
-          <Card 
-            title="Model Form Component" 
-            extra={<CodeButton codeKey="modelForm" title="Model Form Component" />}
-            style={{ marginBottom: 16 }}
-          >
-            <Paragraph>
-              Model forms are dynamically generated based on backend model definitions. 
-              They support field dependencies, validation rules, and automatic GraphQL integration.
-            </Paragraph>
-            
-            <Title level={5}>Example</Title>
-            <ModelForm
-              config={userFormConfig}
-              initialValues={{
-                name: 'John Doe',
-                email: 'john.doe@example.com',
-                department: 'engineering',
-                salary: 85000,
-                isActive: true,
-                joinDate: '2023-01-15'
-              }}
-              onSubmit={async (values) => {
-                console.log('Form submitted:', values);
-                // In real app: await updateUser({ variables: { input: values } });
-              }}
-              onChange={(values) => {
-                console.log('Form values changed:', values);
-              }}
-            />
-          </Card>
-        </div>
-      )
-    },
-    {
-      key: 'modeltable',
-      label: 'Model Table',
-      children: (
-        <div>
-          <Card 
-            title="Model Table Component" 
-            extra={<CodeButton codeKey="modelTable" title="Model Table Component" />}
-            style={{ marginBottom: 16 }}
-          >
-            <Paragraph>
-              Model tables display data from backend models with automatic GraphQL integration. 
-              Features include sorting, filtering, pagination, row selection, and bulk actions.
-            </Paragraph>
-            
-            <Title level={5}>Example</Title>
-            <ModelTable
-              config={tableConfig}
-              dataSource={mockTableData}
-              onRefresh={() => console.log('Refreshing table data...')}
-              onPaginationChange={(page, pageSize) => {
-                console.log('Pagination changed:', { page, pageSize });
-              }}
-              onSortChange={(field, order) => {
-                console.log('Sort changed:', { field, order });
-              }}
-              onFilterChange={(filters) => {
-                console.log('Filters changed:', filters);
-              }}
-              onSearch={(searchTerm) => {
-                console.log('Search:', searchTerm);
-              }}
-            />
           </Card>
         </div>
       )
@@ -965,8 +524,16 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
   return (
     <ViewContainer config={config}>
       <div style={{ padding: 16 }}>
+        <div style={{ marginBottom: 24 }}>
+          <Title level={4}>Data Field Components</Title>
+          <Paragraph>
+            Comprehensive showcase of DataField component with support for all data types, 
+            readonly/editable modes, and multi-valued fields with proper GraphQL integration patterns.
+          </Paragraph>
+        </div>
+        
         <Tabs
-          defaultActiveKey="overview"
+          defaultActiveKey="datafield"
           items={tabItems}
           size="large"
         />
