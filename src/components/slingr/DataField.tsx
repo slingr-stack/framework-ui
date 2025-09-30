@@ -162,7 +162,7 @@ export const DataField: React.FC<DataFieldProps> = ({
             mode={multiple ? 'multiple' : undefined}
             showSearch
             filterOption={(input, option) =>
-              (option?.children as string)?.toLowerCase().includes(input.toLowerCase())
+              String(option?.children)?.toLowerCase().includes(input.toLowerCase())
             }
             suffixIcon={<SearchOutlined />}
             onChange={(val) => onChange?.(val)}
