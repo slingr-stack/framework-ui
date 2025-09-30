@@ -117,8 +117,8 @@ const generateMockKanbanData = (): KanbanColumn[] => {
 };
 
 export const KanbanView: ViewComponent = ({ config }) => {
-  const [columns] = useState<KanbanColumn[]>(generateMockKanbanData());
-  const [filteredColumns, setFilteredColumns] = useState<KanbanColumn[]>(columns);
+  const [columns, setColumns] = useState<KanbanColumn[]>(generateMockKanbanData());
+  const [filteredColumns, setFilteredColumns] = useState<KanbanColumn[]>([]);
   const [quickFilters, setQuickFilters] = useState<Record<string, boolean>>({
     highPriority: false,
     myTasks: false,
@@ -128,10 +128,43 @@ export const KanbanView: ViewComponent = ({ config }) => {
   const [advancedFilterVisible, setAdvancedFilterVisible] = useState(false);
   const [filterForm] = Form.useForm();
 
+  // Initialize filtered columns
+  useEffect(() => {
+    setFilteredColumns(columns);
+  }, [columns]);
+
+  // Handle card drop between columns
+  const handleCardDrop = (targetColumnId: string, cardId: string, sourceColumnId: string) => {
+    if (targetColumnId === sourceColumnId) return;
+
+    setColumns(prevColumns => {
+      const newColumns = [...prevColumns];
+      
+      // Find source and target columns
+      const sourceColIndex = newColumns.findIndex(col => col.id === sourceColumnId);
+      const targetColIndex = newColumns.findIndex(col => col.id === targetColumnId);
+      
+      if (sourceColIndex === -1 || targetColIndex === -1) return prevColumns;
+      
+      // Find and remove card from source column
+      const cardIndex = newColumns[sourceColIndex].cards.findIndex(card => card.id === cardId);
+      if (cardIndex === -1) return prevColumns;
+      
+      const [movedCard] = newColumns[sourceColIndex].cards.splice(cardIndex, 1);
+      
+      // Update card status and add to target column
+      movedCard.status = newColumns[targetColIndex].status;
+      newColumns[targetColIndex].cards.push(movedCard);
+      
+      message.success(`Moved "${movedCard.title}" to ${newColumns[targetColIndex].title}`);
+      return newColumns;
+    });
+  };
+
   // Apply filters when quickFilters change
   useEffect(() => {
     applyFilters();
-  }, [quickFilters]);
+  }, [quickFilters, columns]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply filters
   const applyFilters = () => {
@@ -265,21 +298,26 @@ export const KanbanView: ViewComponent = ({ config }) => {
       size="small"
       style={{ 
         marginBottom: 8, 
-        cursor: 'pointer',
+        cursor: 'move',
         border: '1px solid #f0f0f0',
         borderRadius: 6,
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
       }}
       bodyStyle={{ padding: 12 }}
-      extra={
-        <Dropdown overlay={getCardMenu()} trigger={['click']}>
-          <Button type="text" size="small" icon={<MoreOutlined />} />
-        </Dropdown>
+      title={
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text strong style={{ fontSize: 14 }}>{card.title}</Text>
+          <Dropdown overlay={getCardMenu()} trigger={['click']}>
+            <Button type="text" size="small" icon={<MoreOutlined />} />
+          </Dropdown>
+        </div>
       }
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({ cardId: card.id, sourceColumn: card.status }));
+      }}
     >
       <Space direction="vertical" style={{ width: '100%' }} size="small">
-        <Text strong style={{ fontSize: 14 }}>{card.title}</Text>
-        
         {card.description && (
           <Text type="secondary" style={{ fontSize: 12 }}>
             {card.description.length > 100 ? card.description.substring(0, 100) + '...' : card.description}
@@ -429,6 +467,19 @@ export const KanbanView: ViewComponent = ({ config }) => {
                     padding: 8, 
                     height: 'calc(100% - 57px)', 
                     overflowY: 'auto' 
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const data = e.dataTransfer.getData('text/plain');
+                    try {
+                      const { cardId, sourceColumn } = JSON.parse(data);
+                      handleCardDrop(column.id, cardId, sourceColumn);
+                    } catch (error) {
+                      console.error('Error parsing drop data:', error);
+                    }
                   }}
                 >
                   {column.cards.map(renderCard)}
