@@ -25,7 +25,6 @@ import {
   ReloadOutlined,
   BarChartOutlined,
   LineChartOutlined,
-  PieChartOutlined,
   CodeOutlined
 } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
@@ -34,6 +33,7 @@ import type { RangePickerProps } from 'antd/es/date-picker';
 import dayjs from 'dayjs';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Line, Column, Area } from '@ant-design/charts';
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -90,6 +90,29 @@ const generateActivities = (department: string) => {
   ];
 
   return department === 'all' ? activities : activities.filter((_, i) => i % 2 === 0);
+};
+
+// Chart renderer function
+const renderChart = (chartType: string, data: any[]) => {
+  const config = {
+    data,
+    xField: 'date',
+    yField: 'users',
+    height: 300,
+    smooth: true,
+    color: chartType === 'line' ? '#1890ff' : chartType === 'bar' ? '#52c41a' : '#722ed1',
+  };
+
+  switch (chartType) {
+    case 'line':
+      return <Line {...config} />;
+    case 'bar':
+      return <Column {...config} />;
+    case 'area':
+      return <Area {...config} />;
+    default:
+      return <Line {...config} />;
+  }
 };
 
 const customDashboardCode = `import React, { useState, useEffect } from 'react';
@@ -522,23 +545,8 @@ export const CustomDashboardView: ViewComponent = ({ config }) => {
                 } 
                 style={{ height: '100%' }}
               >
-                <div style={{ padding: '20px 0', textAlign: 'center' }}>
-                  <Space direction="vertical" size="middle">
-                    <div style={{ fontSize: 16, color: '#666' }}>
-                      {chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart Visualization
-                    </div>
-                    <div style={{ fontSize: 14, color: '#999' }}>
-                      Showing {chartData.length} data points
-                    </div>
-                    <div style={{ fontSize: 12, color: '#ccc' }}>
-                      Chart integration would render here with libraries like Chart.js or D3
-                    </div>
-                    <Space>
-                      <PieChartOutlined style={{ fontSize: 24, color: chartType === 'line' ? '#1890ff' : '#ccc' }} />
-                      <LineChartOutlined style={{ fontSize: 24, color: chartType === 'bar' ? '#52c41a' : '#ccc' }} />
-                      <BarChartOutlined style={{ fontSize: 24, color: chartType === 'area' ? '#722ed1' : '#ccc' }} />
-                    </Space>
-                  </Space>
+                <div style={{ height: 300, padding: '10px 0' }}>
+                  {renderChart(chartType, chartData)}
                 </div>
               </Card>
             </Col>
