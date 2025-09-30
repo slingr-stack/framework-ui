@@ -121,72 +121,154 @@ const data = [
 
 // Component code examples for quick reference
 const componentCodeExamples = {
-  'input-controls': `// Basic Input Components
-import { Input, Select, AutoComplete } from 'antd';
+  'input-controls': `// Enhanced AutoComplete and Input Components
+import { Input, Select, AutoComplete, message } from 'antd';
+import { useState } from 'react';
 const { TextArea } = Input;
 const { Option } = Select;
 
-// Basic Input
-<Input placeholder="Basic usage" />
+// AutoComplete with Search and Events
+const [autoCompleteValue, setAutoCompleteValue] = useState('');
+const [autoCompleteOptions, setAutoCompleteOptions] = useState([]);
+const [searchHistory, setSearchHistory] = useState([]);
 
-// Password Input  
-<Input.Password placeholder="Password" />
+const mockOptions = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'];
 
-// Text Area
-<TextArea rows={3} placeholder="Multi-line input" />
+const handleAutoCompleteSearch = (searchText) => {
+  setAutoCompleteValue(searchText);
+  console.log('Search Event:', { searchText, timestamp: new Date() });
+  
+  if (searchText) {
+    const filtered = mockOptions
+      .filter(option => option.toLowerCase().includes(searchText.toLowerCase()))
+      .map(option => ({ value: option }));
+    setAutoCompleteOptions(filtered);
+  } else {
+    setAutoCompleteOptions(mockOptions.map(option => ({ value: option })));
+  }
+};
 
-// Select with Options
-<Select defaultValue="option1" style={{ width: 120 }}>
+const handleAutoCompleteSelect = (value) => {
+  setAutoCompleteValue(value);
+  setSearchHistory(prev => [value, ...prev.filter(item => item !== value)].slice(0, 5));
+  console.log('Select Event:', { value, timestamp: new Date() });
+  message.success(\`Selected: \${value}\`);
+};
+
+// Single Selection AutoComplete
+<AutoComplete
+  style={{ width: '100%' }}
+  placeholder="Type to search (e.g., 'app' for Apple)"
+  value={autoCompleteValue}
+  options={autoCompleteOptions}
+  onSearch={handleAutoCompleteSearch}
+  onSelect={handleAutoCompleteSelect}
+  onChange={setAutoCompleteValue}
+  allowClear
+  notFoundContent="No items found"
+  filterOption={false}
+/>
+
+// Multiple Selection with Search
+const [selectedValues, setSelectedValues] = useState([]);
+
+<Select
+  mode="multiple"
+  style={{ width: '100%' }}
+  placeholder="Select multiple items"
+  value={selectedValues}
+  onChange={setSelectedValues}
+  options={mockOptions.map(option => ({ label: option, value: option }))}
+  showSearch
+  filterOption={(input, option) =>
+    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+  }
+  allowClear
+  maxTagCount="responsive"
+/>
+
+// Basic Components
+<Input placeholder="Basic input with model binding" />
+<Input.Password placeholder="Password input" />
+<TextArea rows={3} placeholder="Multi-line text area" />
+<Select defaultValue="option1" style={{ width: '100%' }}>
   <Option value="option1">Option 1</Option>
   <Option value="option2">Option 2</Option>
   <Option value="option3">Option 3</Option>
-</Select>
+</Select>`,
 
-// AutoComplete
-<AutoComplete
-  style={{ width: '100%' }}
-  placeholder="Type to search"
-  options={[
-    { value: 'Apple' },
-    { value: 'Banana' },
-    { value: 'Cherry' }
-  ]}
-/>`,
+  'selection-controls': `// Selection Controls with Model Binding and Events
+import { Checkbox, Radio, Switch, Slider, TreeSelect, DatePicker, TimePicker, message } from 'antd';
+import { useState } from 'react';
 
-  'selection-controls': `// Selection Controls
-import { Checkbox, Radio, Switch, Slider, TreeSelect, DatePicker, TimePicker } from 'antd';
+// Component States
+const [checkboxValues, setCheckboxValues] = useState(['b']);
+const [radioValue, setRadioValue] = useState('a');
+const [switchValue, setSwitchValue] = useState(false);
+const [sliderValue, setSliderValue] = useState(30);
+const [treeSelectValue, setTreeSelectValue] = useState();
+const [dateValue, setDateValue] = useState();
+const [timeValue, setTimeValue] = useState();
 
-// Checkbox Group
-<Checkbox.Group>
-  <Checkbox value="A">Option A</Checkbox>
-  <Checkbox value="B" defaultChecked>Option B</Checkbox>
-  <Checkbox value="C" disabled>Option C</Checkbox>
+// Event Handlers with Logging and Feedback
+const handleCheckboxChange = (checkedValues) => {
+  setCheckboxValues(checkedValues);
+  console.log('Checkbox Change Event:', { checkedValues, timestamp: new Date() });
+  message.info(\`Checkboxes selected: \${checkedValues.join(', ') || 'None'}\`);
+};
+
+const handleRadioChange = (e) => {
+  setRadioValue(e.target.value);
+  console.log('Radio Change Event:', { value: e.target.value, timestamp: new Date() });
+  message.info(\`Radio selected: \${e.target.value}\`);
+};
+
+const handleSwitchChange = (checked) => {
+  setSwitchValue(checked);
+  console.log('Switch Change Event:', { checked, timestamp: new Date() });
+  message.info(\`Switch \${checked ? 'ON' : 'OFF'}\`);
+};
+
+// Checkbox Group with Model Binding
+<Checkbox.Group value={checkboxValues} onChange={handleCheckboxChange}>
+  <Checkbox value="a">Option A</Checkbox>
+  <Checkbox value="b">Option B</Checkbox>
+  <Checkbox value="c">Option C</Checkbox>
 </Checkbox.Group>
 
-// Radio Group
-<Radio.Group defaultValue="A">
-  <Radio value="A">A</Radio>
-  <Radio value="B">B</Radio>
-  <Radio value="C">C</Radio>
+// Radio Group with Events
+<Radio.Group value={radioValue} onChange={handleRadioChange}>
+  <Radio value="a">Option A</Radio>
+  <Radio value="b">Option B</Radio>
+  <Radio value="c">Option C</Radio>
 </Radio.Group>
 
-// Switch
+// Switch with Events
 <Switch 
-  checkedChildren="ON" 
+  checked={switchValue} 
+  onChange={handleSwitchChange}
+  checkedChildren="ON"
   unCheckedChildren="OFF" 
-  defaultChecked 
 />
 
-// Slider with Marks
+// Slider with Live Value Updates
 <Slider 
+  value={sliderValue} 
+  onChange={setSliderValue}
   marks={{ 0: '0°C', 26: '26°C', 37: '37°C', 100: '100°C' }}
-  defaultValue={30}
+  tooltip={{ formatter: (value) => \`\${value}°C\` }}
 />
 
-// TreeSelect
+// TreeSelect with Events
 <TreeSelect
   style={{ width: '100%' }}
   placeholder="Select item"
+  value={treeSelectValue}
+  onChange={(value) => {
+    setTreeSelectValue(value);
+    console.log('TreeSelect Change:', value);
+    message.info(\`TreeSelect: \${value}\`);
+  }}
   treeData={[
     { title: 'Parent 1', value: 'parent1', children: [
       { title: 'Child 1-1', value: 'child1-1' },
@@ -194,11 +276,31 @@ import { Checkbox, Radio, Switch, Slider, TreeSelect, DatePicker, TimePicker } f
     ]},
     { title: 'Parent 2', value: 'parent2' }
   ]}
+  allowClear
 />
 
-// Date & Time Pickers
-<DatePicker style={{ width: '100%' }} placeholder="Select date" />
-<TimePicker style={{ width: '100%' }} placeholder="Select time" />`,
+// Date & Time Pickers with Events
+<DatePicker 
+  style={{ width: '100%' }} 
+  placeholder="Select date"
+  value={dateValue}
+  onChange={(date, dateString) => {
+    setDateValue(date);
+    console.log('Date Change:', { date, dateString });
+    if (dateString) message.info(\`Date selected: \${dateString}\`);
+  }}
+/>
+
+<TimePicker 
+  style={{ width: '100%' }} 
+  placeholder="Select time"
+  value={timeValue}
+  onChange={(time, timeString) => {
+    setTimeValue(time);
+    console.log('Time Change:', { time, timeString });
+    if (timeString) message.info(\`Time selected: \${timeString}\`);
+  }}
+/>`,
 
   'date-controls': `// Date and Time Controls
 import { DatePicker, TimePicker } from 'antd';
@@ -213,10 +315,20 @@ const { RangePicker } = DatePicker;
 // Time Picker
 <TimePicker placeholder="Select time" format="HH:mm" />`,
 
-  'progress-indicators': `// Progress and Loading Components
-import { Progress, Spin, Rate } from 'antd';
+  'progress-indicators': `// Progress and Interactive Components
+import { Progress, Spin, Rate, message } from 'antd';
+import { useState } from 'react';
 
-// Progress Bar
+// Interactive Rating with Events
+const [rateValue, setRateValue] = useState(3);
+
+const handleRateChange = (value) => {
+  setRateValue(value);
+  console.log('Rate Change Event:', { value, timestamp: new Date() });
+  message.info(\`Rating: \${value} stars\`);
+};
+
+// Progress Bars
 <Progress percent={75} />
 <Progress percent={100} status="success" />
 <Progress percent={35} status="exception" />
@@ -225,13 +337,15 @@ import { Progress, Spin, Rate } from 'antd';
 <Progress type="circle" percent={75} />
 <Progress type="circle" percent={100} status="success" />
 
-// Loading Spinner
-<Spin size="small" />
-<Spin size="large" />
+// Interactive Rating
+<Rate value={rateValue} onChange={handleRateChange} />
 
-// Rating Component
-<Rate defaultValue={3} />
-<Rate disabled defaultValue={4} />`,
+// Read-only Rating
+<Rate disabled value={4.5} allowHalf />
+
+// Loading Spinners
+<Spin size="small" />
+<Spin size="large" />`,
 
   'data-display': `// Data Display Components
 import { Tag, Badge, Avatar, Alert } from 'antd';
@@ -532,23 +646,113 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
   const [codeModalVisible, setCodeModalVisible] = useState(false);
   const [selectedCodeExample, setSelectedCodeExample] = useState('');
   const [selectedCodeTitle, setSelectedCodeTitle] = useState('');
+  
+  // Enhanced AutoComplete state with model binding and events
   const [autoCompleteOptions, setAutoCompleteOptions] = useState<{value: string}[]>([]);
   const [autoCompleteValue, setAutoCompleteValue] = useState('');
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  
+  // Additional interactive component states
+  const [checkboxValues, setCheckboxValues] = useState<string[]>(['b']);
+  const [radioValue, setRadioValue] = useState('a');
+  const [treeSelectValue, setTreeSelectValue] = useState<string>();
+  const [dateValue, setDateValue] = useState<any>();
+  const [timeValue, setTimeValue] = useState<any>();
+  const [rateValue, setRateValue] = useState(3);
 
   const mockOptions = [
-    'Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew'
+    'Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew',
+    'Kiwi', 'Lemon', 'Mango', 'Orange', 'Peach', 'Pear', 'Strawberry', 'Watermelon'
   ];
 
   const handleAutoCompleteSearch = (searchText: string) => {
     setAutoCompleteValue(searchText);
+    
+    // Trigger search event
+    console.log('AutoComplete Search Event:', { searchText, timestamp: new Date() });
+    
     if (searchText) {
       const filtered = mockOptions
         .filter(option => option.toLowerCase().includes(searchText.toLowerCase()))
         .map(option => ({ value: option }));
       setAutoCompleteOptions(filtered);
     } else {
-      setAutoCompleteOptions([]);
+      setAutoCompleteOptions(mockOptions.map(option => ({ value: option })));
     }
+  };
+
+  const handleAutoCompleteSelect = (value: string) => {
+    setAutoCompleteValue(value);
+    
+    // Add to search history
+    setSearchHistory(prev => {
+      const newHistory = [value, ...prev.filter(item => item !== value)].slice(0, 5);
+      return newHistory;
+    });
+    
+    // Trigger select event
+    console.log('AutoComplete Select Event:', { value, timestamp: new Date() });
+    
+    // Show selection feedback
+    message.success(`Selected: ${value}`);
+  };
+
+  const handleAutoCompleteChange = (value: string) => {
+    setAutoCompleteValue(value);
+    
+    // Trigger change event
+    console.log('AutoComplete Change Event:', { value, timestamp: new Date() });
+  };
+
+  // Event handlers for other components
+  const handleCheckboxChange = (checkedValues: string[]) => {
+    setCheckboxValues(checkedValues);
+    console.log('Checkbox Change Event:', { checkedValues, timestamp: new Date() });
+    message.info(`Checkboxes selected: ${checkedValues.join(', ') || 'None'}`);
+  };
+
+  const handleRadioChange = (e: any) => {
+    setRadioValue(e.target.value);
+    console.log('Radio Change Event:', { value: e.target.value, timestamp: new Date() });
+    message.info(`Radio selected: ${e.target.value}`);
+  };
+
+  const handleSwitchChange = (checked: boolean) => {
+    setSwitchValue(checked);
+    console.log('Switch Change Event:', { checked, timestamp: new Date() });
+    message.info(`Switch ${checked ? 'ON' : 'OFF'}`);
+  };
+
+  const handleSliderChange = (value: number) => {
+    setSliderValue(value);
+    console.log('Slider Change Event:', { value, timestamp: new Date() });
+  };
+
+  const handleTreeSelectChange = (value: string) => {
+    setTreeSelectValue(value);
+    console.log('TreeSelect Change Event:', { value, timestamp: new Date() });
+    message.info(`TreeSelect: ${value}`);
+  };
+
+  const handleDateChange = (date: any, dateString: string | string[]) => {
+    setDateValue(date);
+    const dateStr = Array.isArray(dateString) ? dateString[0] : dateString;
+    console.log('DatePicker Change Event:', { date, dateString: dateStr, timestamp: new Date() });
+    if (dateStr) message.info(`Date selected: ${dateStr}`);
+  };
+
+  const handleTimeChange = (time: any, timeString: string | string[]) => {
+    setTimeValue(time);
+    const timeStr = Array.isArray(timeString) ? timeString[0] : timeString;
+    console.log('TimePicker Change Event:', { time, timeString: timeStr, timestamp: new Date() });
+    if (timeStr) message.info(`Time selected: ${timeStr}`);
+  };
+
+  const handleRateChange = (value: number) => {
+    setRateValue(value);
+    console.log('Rate Change Event:', { value, timestamp: new Date() });
+    message.info(`Rating: ${value} stars`);
   };
 
   const showModal = () => {
@@ -627,16 +831,50 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                       </Select>
                     </div>
                     <div>
-                      <Text strong>AutoComplete</Text>
+                      <Text strong>AutoComplete - Single Selection</Text>
                       <AutoComplete
                         style={{ width: '100%' }}
-                        placeholder="Type to search fruits"
+                        placeholder="Type to search fruits (e.g., 'app' for Apple)"
                         value={autoCompleteValue}
-                        options={autoCompleteOptions}
+                        options={autoCompleteOptions.length > 0 ? autoCompleteOptions : mockOptions.map(option => ({ value: option }))}
                         onSearch={handleAutoCompleteSearch}
-                        onSelect={(value) => setAutoCompleteValue(value)}
+                        onSelect={handleAutoCompleteSelect}
+                        onChange={handleAutoCompleteChange}
                         allowClear
+                        notFoundContent="No fruits found"
+                        filterOption={false}
                       />
+                      {searchHistory.length > 0 && (
+                        <div style={{ marginTop: 8 }}>
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            Recent: {searchHistory.slice(0, 3).join(', ')}
+                          </Text>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <Text strong>AutoComplete - Multiple Selection</Text>
+                      <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Select multiple fruits"
+                        value={selectedValues}
+                        onChange={setSelectedValues}
+                        options={mockOptions.map(option => ({ label: option, value: option }))}
+                        showSearch
+                        filterOption={(input, option) =>
+                          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        }
+                        allowClear
+                        maxTagCount="responsive"
+                      />
+                      {selectedValues.length > 0 && (
+                        <div style={{ marginTop: 8 }}>
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            Selected {selectedValues.length} item(s): {selectedValues.join(', ')}
+                          </Text>
+                        </div>
+                      )}
                     </div>
                   </Space>
                 </ComponentCard>
@@ -646,45 +884,66 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                 <ComponentCard title="Selection Controls" codeKey="selection-controls">
                   <Space direction="vertical" style={{ width: '100%' }} size="middle">
                     <div>
-                      <Text strong>Checkbox</Text>
+                      <Text strong>Checkbox Group with Model Binding</Text>
                       <div>
-                        <Checkbox>Option A</Checkbox>
-                        <Checkbox defaultChecked>Option B</Checkbox>
-                        <Checkbox disabled>Option C</Checkbox>
+                        <Checkbox.Group value={checkboxValues} onChange={handleCheckboxChange}>
+                          <Checkbox value="a">Option A</Checkbox>
+                          <Checkbox value="b">Option B</Checkbox>
+                          <Checkbox value="c">Option C</Checkbox>
+                        </Checkbox.Group>
+                        <div style={{ marginTop: 8 }}>
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            Selected: {checkboxValues.join(', ') || 'None'}
+                          </Text>
+                        </div>
                       </div>
                     </div>
                     <div>
-                      <Text strong>Radio</Text>
-                      <Radio.Group defaultValue="a">
-                        <Radio value="a">A</Radio>
-                        <Radio value="b">B</Radio>
-                        <Radio value="c">C</Radio>
+                      <Text strong>Radio with Events</Text>
+                      <Radio.Group value={radioValue} onChange={handleRadioChange}>
+                        <Radio value="a">Option A</Radio>
+                        <Radio value="b">Option B</Radio>
+                        <Radio value="c">Option C</Radio>
                       </Radio.Group>
+                      <div style={{ marginTop: 8 }}>
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                          Current: {radioValue}
+                        </Text>
+                      </div>
                     </div>
                     <div>
-                      <Text strong>Switch</Text>
+                      <Text strong>Switch with Events</Text>
                       <div>
                         <Switch 
                           checked={switchValue} 
-                          onChange={setSwitchValue}
+                          onChange={handleSwitchChange}
                           checkedChildren="ON"
                           unCheckedChildren="OFF" 
                         />
+                        <Text style={{ marginLeft: 8 }}>
+                          Status: {switchValue ? 'Enabled' : 'Disabled'}
+                        </Text>
                       </div>
                     </div>
                     <div>
-                      <Text strong>Slider</Text>
+                      <Text strong>Slider with Live Value</Text>
                       <Slider 
                         value={sliderValue} 
-                        onChange={setSliderValue}
+                        onChange={handleSliderChange}
                         marks={{ 0: '0°C', 26: '26°C', 37: '37°C', 100: '100°C' }}
+                        tooltip={{ formatter: (value) => `${value}°C` }}
                       />
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        Current temperature: {sliderValue}°C
+                      </Text>
                     </div>
                     <div>
-                      <Text strong>TreeSelect</Text>
+                      <Text strong>TreeSelect with Events</Text>
                       <TreeSelect
                         style={{ width: '100%' }}
                         placeholder="Select item"
+                        value={treeSelectValue}
+                        onChange={handleTreeSelectChange}
                         treeData={[
                           { title: 'Parent 1', value: 'parent1', children: [
                             { title: 'Child 1-1', value: 'child1-1' },
@@ -692,13 +951,29 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                           ]},
                           { title: 'Parent 2', value: 'parent2' }
                         ]}
+                        allowClear
                       />
+                      {treeSelectValue && (
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                          Selected: {treeSelectValue}
+                        </Text>
+                      )}
                     </div>
                     <div>
-                      <Text strong>Date & Time</Text>
+                      <Text strong>Date & Time with Events</Text>
                       <Space direction="vertical" style={{ width: '100%' }}>
-                        <DatePicker style={{ width: '100%' }} placeholder="Select date" />
-                        <TimePicker style={{ width: '100%' }} placeholder="Select time" />
+                        <DatePicker 
+                          style={{ width: '100%' }} 
+                          placeholder="Select date"
+                          value={dateValue}
+                          onChange={handleDateChange}
+                        />
+                        <TimePicker 
+                          style={{ width: '100%' }} 
+                          placeholder="Select time"
+                          value={timeValue}
+                          onChange={handleTimeChange}
+                        />
                       </Space>
                     </div>
                   </Space>
@@ -720,9 +995,18 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                       <Progress percent={100} />
                     </div>
                     <div>
-                      <Text strong>Rating</Text>
+                      <Text strong>Interactive Rating with Events</Text>
                       <div>
-                        <Rate defaultValue={3} />
+                        <Rate value={rateValue} onChange={handleRateChange} />
+                        <Text style={{ marginLeft: 8 }}>
+                          {rateValue ? `${rateValue} stars` : 'No rating'}
+                        </Text>
+                      </div>
+                      <div style={{ marginTop: 8 }}>
+                        <Rate disabled value={4.5} allowHalf />
+                        <Text style={{ marginLeft: 8 }} type="secondary">
+                          Read-only rating: 4.5 stars
+                        </Text>
                       </div>
                     </div>
                     <div>
