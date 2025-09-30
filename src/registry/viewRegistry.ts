@@ -26,16 +26,6 @@ export interface ViewRegistryEntry {
 }
 
 export const viewRegistry: Record<string, ViewRegistryEntry> = {
-  'slingr-components': {
-    config: {
-      id: 'slingr-components',
-      title: 'Slingr components',
-      description: 'Collection of UI components built on Ant Design for seamless backend integration',
-      icon: CommentOutlined,
-      category: undefined // Top level item
-    },
-    component: SlingrComponentsView
-  },
   'api-integration': {
     config: {
       id: 'api-integration',
@@ -86,13 +76,23 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
     },
     component: FormView
   },
+  'slingr-components': {
+    config: {
+      id: 'slingr-components',
+      title: 'Components',
+      description: 'Collection of UI components built on Ant Design for seamless backend integration',
+      icon: CommentOutlined,
+      category: 'Slingr' // Move under Slingr section
+    },
+    component: SlingrComponentsView
+  },
   'grid-view': {
     config: {
       id: 'grid-view',
       title: 'Grid view',
       description: 'Table with filtering capabilities and advanced controls',
       icon: TableOutlined,
-      category: 'Slingr views'
+      category: 'Slingr'
     },
     component: GridView
   },
@@ -102,7 +102,7 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
       title: 'Kanban view',
       description: 'Card-based project management with drag-and-drop and filtering',
       icon: AppstoreOutlined,
-      category: 'Slingr views'
+      category: 'Slingr'
     },
     component: KanbanView
   },
@@ -112,7 +112,7 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
       title: 'Form view',
       description: 'Dynamic forms with backend-driven field rules and validation',
       icon: ProjectOutlined,
-      category: 'Slingr views'
+      category: 'Slingr'
     },
     component: DynamicFormView
   }
