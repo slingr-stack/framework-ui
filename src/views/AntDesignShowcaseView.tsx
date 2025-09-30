@@ -31,7 +31,6 @@ import {
   Breadcrumb,
   Menu,
   Tabs,
-  AutoComplete,
   DatePicker,
   TimePicker,
   Transfer,
@@ -121,53 +120,13 @@ const data = [
 
 // Component code examples for quick reference
 const componentCodeExamples = {
-  'input-controls': `// Enhanced AutoComplete and Input Components
-import { Input, Select, AutoComplete, message } from 'antd';
+  'input-controls': `// Enhanced Input Components and Multiple Selection
+import { Input, Select, message } from 'antd';
 import { useState } from 'react';
 const { TextArea } = Input;
 const { Option } = Select;
 
-// AutoComplete with Search and Events
-const [autoCompleteValue, setAutoCompleteValue] = useState('');
-const [autoCompleteOptions, setAutoCompleteOptions] = useState([]);
-const [searchHistory, setSearchHistory] = useState([]);
-
 const mockOptions = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'];
-
-const handleAutoCompleteSearch = (searchText) => {
-  setAutoCompleteValue(searchText);
-  console.log('Search Event:', { searchText, timestamp: new Date() });
-  
-  if (searchText) {
-    const filtered = mockOptions
-      .filter(option => option.toLowerCase().includes(searchText.toLowerCase()))
-      .map(option => ({ value: option }));
-    setAutoCompleteOptions(filtered);
-  } else {
-    setAutoCompleteOptions(mockOptions.map(option => ({ value: option })));
-  }
-};
-
-const handleAutoCompleteSelect = (value) => {
-  setAutoCompleteValue(value);
-  setSearchHistory(prev => [value, ...prev.filter(item => item !== value)].slice(0, 5));
-  console.log('Select Event:', { value, timestamp: new Date() });
-  message.success(\`Selected: \${value}\`);
-};
-
-// Single Selection AutoComplete
-<AutoComplete
-  style={{ width: '100%' }}
-  placeholder="Type to search (e.g., 'app' for Apple)"
-  value={autoCompleteValue}
-  options={autoCompleteOptions}
-  onSearch={handleAutoCompleteSearch}
-  onSelect={handleAutoCompleteSelect}
-  onChange={setAutoCompleteValue}
-  allowClear
-  notFoundContent="No items found"
-  filterOption={false}
-/>
 
 // Multiple Selection with Search
 const [selectedValues, setSelectedValues] = useState([]);
@@ -648,10 +607,7 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
   const [selectedCodeTitle, setSelectedCodeTitle] = useState('');
   
   // Enhanced AutoComplete state with model binding and events
-  const [autoCompleteOptions, setAutoCompleteOptions] = useState<{value: string}[]>([]);
-  const [autoCompleteValue, setAutoCompleteValue] = useState('');
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   
   // Additional interactive component states
   const [checkboxValues, setCheckboxValues] = useState<string[]>(['b']);
@@ -665,45 +621,6 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
     'Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew',
     'Kiwi', 'Lemon', 'Mango', 'Orange', 'Peach', 'Pear', 'Strawberry', 'Watermelon'
   ];
-
-  const handleAutoCompleteSearch = (searchText: string) => {
-    setAutoCompleteValue(searchText);
-    
-    // Trigger search event
-    console.log('AutoComplete Search Event:', { searchText, timestamp: new Date() });
-    
-    if (searchText) {
-      const filtered = mockOptions
-        .filter(option => option.toLowerCase().includes(searchText.toLowerCase()))
-        .map(option => ({ value: option }));
-      setAutoCompleteOptions(filtered);
-    } else {
-      setAutoCompleteOptions(mockOptions.map(option => ({ value: option })));
-    }
-  };
-
-  const handleAutoCompleteSelect = (value: string) => {
-    setAutoCompleteValue(value);
-    
-    // Add to search history
-    setSearchHistory(prev => {
-      const newHistory = [value, ...prev.filter(item => item !== value)].slice(0, 5);
-      return newHistory;
-    });
-    
-    // Trigger select event
-    console.log('AutoComplete Select Event:', { value, timestamp: new Date() });
-    
-    // Show selection feedback
-    message.success(`Selected: ${value}`);
-  };
-
-  const handleAutoCompleteChange = (value: string) => {
-    setAutoCompleteValue(value);
-    
-    // Trigger change event
-    console.log('AutoComplete Change Event:', { value, timestamp: new Date() });
-  };
 
   // Event handlers for other components
   const handleCheckboxChange = (checkedValues: string[]) => {
@@ -830,28 +747,7 @@ export const AntDesignShowcaseView: ViewComponent = ({ config }) => {
                         <Option value="option3">Option 3</Option>
                       </Select>
                     </div>
-                    <div>
-                      <Text strong>AutoComplete - Single Selection</Text>
-                      <AutoComplete
-                        style={{ width: '100%' }}
-                        placeholder="Type to search fruits (e.g., 'app' for Apple)"
-                        value={autoCompleteValue}
-                        options={autoCompleteOptions.length > 0 ? autoCompleteOptions : mockOptions.map(option => ({ value: option }))}
-                        onSearch={handleAutoCompleteSearch}
-                        onSelect={handleAutoCompleteSelect}
-                        onChange={handleAutoCompleteChange}
-                        allowClear
-                        notFoundContent="No fruits found"
-                        filterOption={false}
-                      />
-                      {searchHistory.length > 0 && (
-                        <div style={{ marginTop: 8 }}>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            Recent: {searchHistory.slice(0, 3).join(', ')}
-                          </Text>
-                        </div>
-                      )}
-                    </div>
+
                     <div>
                       <Text strong>AutoComplete - Multiple Selection</Text>
                       <Select
