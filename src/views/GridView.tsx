@@ -13,9 +13,6 @@ import {
   Form,
   InputNumber,
   Typography,
-  DatePicker,
-  AutoComplete,
-  Modal,
   message
 } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
@@ -27,17 +24,15 @@ import {
   SettingOutlined,
   UserOutlined,
   CalendarOutlined,
-  DollarOutlined,
-  CodeOutlined
+  DollarOutlined
 } from '@ant-design/icons';
 import { ViewContainer } from '../components/ViewContainer';
 import type { ViewComponent } from '../types/view';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 
 const { Option } = Select;
 const { Text } = Typography;
-const { RangePicker } = DatePicker;
+
 
 interface DataRecord {
   key: string;
@@ -101,9 +96,7 @@ const generateMockData = (): DataRecord[] => {
 export const GridView: ViewComponent = ({ config }) => {
   const [data, setData] = useState<DataRecord[]>([]);
   const [filteredData, setFilteredData] = useState<DataRecord[]>([]);
-  const [loading, setLoading] = useState(true);
   const [advancedFilterVisible, setAdvancedFilterVisible] = useState(false);
-  const [codeModalVisible, setCodeModalVisible] = useState(false);
   const [quickFilters, setQuickFilters] = useState<Record<string, boolean>>({
     activeOnly: false,
     highSalary: false,
@@ -113,10 +106,6 @@ export const GridView: ViewComponent = ({ config }) => {
   
   // Advanced filter form
   const [filterForm] = Form.useForm();
-  
-  // Autocomplete options
-  const [departmentOptions, setDepartmentOptions] = useState<{value: string}[]>([]);
-  const [roleOptions, setRoleOptions] = useState<{value: string}[]>([]);
 
   // Load initial data
   useEffect(() => {
@@ -131,21 +120,12 @@ export const GridView: ViewComponent = ({ config }) => {
   }, [quickFilters, data]);
 
   const loadData = async () => {
-    setLoading(true);
     try {
       const mockData = await mockApiCall(generateMockData());
       setData(mockData);
       setFilteredData(mockData);
-      
-      // Extract unique values for autocomplete
-      const departments = [...new Set(mockData.map(item => item.department))];
-      const roles = [...new Set(mockData.map(item => item.role))];
-      setDepartmentOptions(departments.map(dept => ({ value: dept })));
-      setRoleOptions(roles.map(role => ({ value: role })));
     } catch (error) {
       message.error('Failed to load data');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -231,90 +211,6 @@ export const GridView: ViewComponent = ({ config }) => {
   };
 
   // Refresh data
-  const handleRefresh = () => {
-    loadData();
-    setQuickFilters({
-      activeOnly: false,
-      highSalary: false,
-      recentJoiners: false,
-      managers: false
-    });
-    filterForm.resetFields();
-  };
-
-  // Autocomplete search for departments
-  const handleDepartmentSearch = (searchText: string) => {
-    if (searchText) {
-      const filtered = [...new Set(data.map(item => item.department))]
-        .filter(dept => dept.toLowerCase().includes(searchText.toLowerCase()))
-        .map(dept => ({ value: dept }));
-      setDepartmentOptions(filtered);
-    } else {
-      const allDepartments = [...new Set(data.map(item => item.department))];
-      setDepartmentOptions(allDepartments.map(dept => ({ value: dept })));
-    }
-  };
-
-  // Code viewing
-  const gridViewCode = `// Grid View with Advanced Filtering
-import { Table, Input, Select, Button, DatePicker, AutoComplete } from 'antd';
-import { useState, useEffect } from 'react';
-
-const GridView = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [quickFilters, setQuickFilters] = useState({
-    activeOnly: false,
-    highSalary: false,
-    recentJoiners: false,
-    managers: false
-  });
-
-  // Load data with API simulation
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/users');
-      const users = await response.json();
-      setData(users);
-      setFilteredData(users);
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Quick filter handler
-  const handleQuickFilter = (filterKey) => {
-    setQuickFilters(prev => ({
-      ...prev,
-      [filterKey]: !prev[filterKey]
-    }));
-  };
-
-  // Apply filters with useEffect
-  useEffect(() => {
-    if (data.length > 0) {
-      applyAllFilters();
-    }
-  }, [quickFilters, data]);
-
-  return (
-    <Table
-      columns={columns}
-      dataSource={filteredData}
-      loading={loading}
-      pagination={{ pageSize: 10 }}
-    />
-  );
-};`;
-
-  const showCodeModal = () => {
-    setCodeModalVisible(true);
-  };
-
   // Advanced filter submit
   const handleAdvancedFilter = async () => {
     try {

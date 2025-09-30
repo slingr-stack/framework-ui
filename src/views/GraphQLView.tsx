@@ -31,7 +31,7 @@ import type { ViewComponent } from '../types/view';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 // Mock data since we don't have a real GraphQL endpoint
 const mockUsers = [
