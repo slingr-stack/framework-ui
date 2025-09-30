@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { ThemeSelector } from './ThemeSelector';
 import { viewRegistry, getViewCategories, getViewsByCategory, getTopLevelViews } from '../registry/viewRegistry';
 
 const { Header, Sider, Content } = Layout;
@@ -188,6 +189,7 @@ export const MainLayout: React.FC = () => {
           </Badge>
         </Space>
         <Space>
+          <ThemeSelector />
           <Avatar size="small" icon={<UserOutlined />} />
           <Text style={{ color: 'white' }}>
             {user?.name || user?.email || 'User'}

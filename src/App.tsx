@@ -1,25 +1,23 @@
 import { ApolloProvider } from '@apollo/client/react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider } from 'antd';
 import { client } from './lib/apollo-client';
 import { useAuth } from './hooks/useAuth';
+import { useTheme } from './hooks/useTheme';
 import { LoginPage } from './pages/LoginPage';
 import { MainLayout } from './components/MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
   const { isAuthenticated } = useAuth();
+  const { themeConfig } = useTheme();
 
   return (
     <ApolloProvider client={client}>
       <ConfigProvider
         theme={{
-          algorithm: theme.defaultAlgorithm,
-          token: {
-            colorPrimary: '#1890ff',
-            borderRadius: 8,
-            colorBgContainer: '#ffffff',
-          },
+          algorithm: themeConfig.algorithm,
+          token: themeConfig.token,
         }}
       >
         <Router>
