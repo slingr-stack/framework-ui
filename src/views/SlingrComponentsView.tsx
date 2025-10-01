@@ -2080,10 +2080,10 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-relationship</AntText>
             <DataField 
-              label="Customers" 
+              label="Team Members" 
               value={[1, 2]} 
               type="relationship"
-              model="customers"
+              model="users"
               mode="readonly"
               multiple
             />
