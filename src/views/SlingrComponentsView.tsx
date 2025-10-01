@@ -42,13 +42,6 @@ const mockUserData = {
   ]
 };
 
-// Mock relationship options
-const mockManagers = [
-  { id: 1, label: 'Jane Smith', value: 1 },
-  { id: 2, label: 'Bob Johnson', value: 2 },
-  { id: 3, label: 'Sarah Wilson', value: 3 },
-];
-
 const mockDepartments = [
   { label: 'Engineering', value: 'engineering' },
   { label: 'Design', value: 'design' },
@@ -62,13 +55,6 @@ const mockSkills = [
   { id: 3, label: 'React', value: 'react' },
   { id: 4, label: 'Node.js', value: 'nodejs' },
   { id: 5, label: 'Python', value: 'python' },
-];
-
-const mockCustomers = [
-  { id: 1, label: 'Acme Corp', value: 1 },
-  { id: 2, label: 'Tech Solutions Inc', value: 2 },
-  { id: 3, label: 'Global Industries', value: 3 },
-  { id: 4, label: 'StartupCo', value: 4 },
 ];
 
 // Code examples for each data field type
@@ -1563,7 +1549,6 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
   const CodeButton = ({ codeKey, title }: { codeKey: keyof typeof codeExamples; title: string }) => (
     <Button 
       type="primary" 
-      size="default" 
       icon={<CodeOutlined />}
       onClick={() => showCodeExample(codeKey, title)}
       style={{ fontWeight: 'bold' }}
