@@ -1374,6 +1374,7 @@ import { gql } from '@apollo/client';
 // - label: string (required)
 // - value: string | number | Array<string | number> | null
 // - type: 'relationship'
+// - model: string (REQUIRED - target model name for automatic option management)
 // - mode: 'readonly' | 'editable'
 // - multiple: boolean (for multi-select relationships)
 // - helpText: string
@@ -1381,13 +1382,16 @@ import { gql } from '@apollo/client';
 // - error: string
 // - onChange: (value) => void
 
-// Relationship Options Examples:
-// Options are automatically managed by model configuration
-// No need to provide relationshipOptions prop
+// IMPORTANT: Relationship fields automatically handle:
+// - Data retrieval from the configured model
+// - Pagination of options
+// - Search/filter functionality based on user input
+// - Option display and selection
+// No need to manually manage options - just specify the model name!
 
 // GraphQL Binding Examples:
-const FETCH_RELATIONSHIPS = gql\`
-  query GetRelationships($id: ID!) {
+const FETCH_USER = gql\`
+  query GetUser($id: ID!) {
     user(id: $id) {
       manager {
         id
@@ -1397,12 +1401,6 @@ const FETCH_RELATIONSHIPS = gql\`
         id
         name
       }
-    }
-    
-    # Fetch available options
-    managers {
-      id
-      name
     }
   }
 \`;
@@ -1421,7 +1419,7 @@ const UPDATE_MANAGER = gql\`
 
 // Complete Component Usage:
 function UserManagerField({ userId }) {
-  const { data, loading, error } = useQuery(FETCH_RELATIONSHIPS, {
+  const { data, loading, error } = useQuery(FETCH_USER, {
     variables: { id: userId }
   });
   
@@ -1430,18 +1428,12 @@ function UserManagerField({ userId }) {
     onError: (error) => message.error(\`Failed to update: \${error.message}\`)
   });
 
-  // Transform managers data into options format
-  const managerOptions = data?.managers?.map(manager => ({
-    id: manager.id,
-    label: manager.name,
-    value: manager.id
-  })) || [];
-
   return (
     <DataField 
       label="Manager" 
       value={data?.user?.manager?.id} 
       type="relationship" 
+      model="users"              // REQUIRED: Specifies the model to query
       mode="editable"
       loading={loading}
       error={error?.message}
@@ -1453,18 +1445,21 @@ function UserManagerField({ userId }) {
   );
 }
 
-// Simple Examples:
+// Simple Relationship Example:
 <DataField 
   label="Manager" 
   value={1} 
   type="relationship" 
+  model="users"            // Options auto-loaded from users model
   mode="readonly"
 />
 
+// Editable Relationship with Search:
 <DataField 
   label="Manager" 
   value={1} 
   type="relationship" 
+  model="users"            // Search automatically enabled
   mode="editable"
   onChange={(value) => console.log('Manager changed:', value)}
 />
@@ -1474,30 +1469,36 @@ function UserManagerField({ userId }) {
   label="Assigned Customers" 
   value={[1, 2]} 
   type="relationship" 
+  model="customers"        // Multiple selection from customers model
   mode="editable"
   multiple
   helpText="Select multiple customers"
   onChange={(value) => setAssignedCustomers(value)}
 />
 
-// Dynamic Relationship Loading:
-// Options are automatically loaded from model configuration
+// Relationship with Pagination:
+// Pagination is automatic - options load as user scrolls
 <DataField 
-  label="Team Lead" 
-  value={teamLead} 
+  label="Project"  
+  value={projectId} 
   type="relationship" 
+  model="projects"         // Automatically paginates large datasets
   mode="editable"
-  loading={usersLoading}
-  helpText="Select team leader"
-  onChange={(value) => {
-    setTeamLead(value);
-    // Update team assignments
-    updateTeamAssignments(value);
-  }}
+  helpText="Select project"
+  onChange={(value) => setProjectId(value)}
 />
 
-// Complex Relationship with Search:
-// Search functionality is built-in for relationship fields
+// Relationship with Filter/Search:
+// Search automatically filters the model data
+<DataField 
+  label="Team Member" 
+  value={memberId} 
+  type="relationship" 
+  model="users"            // User types to filter users list
+  mode="editable"
+  helpText="Type to search team members"
+  onChange={(value) => setMemberId(value)}
+/>
 <DataField 
   label="Project Members" 
   value={projectMembers} 
@@ -1580,7 +1581,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
     const additionalProps = (() => {
       switch (type) {
         case 'choice': return '\n  choices={choiceOptions}';
-        case 'relationship': return ''; // Options are automatically managed by model configuration
+        case 'relationship': return '\n  model="users"'; // Model is required for automatic option management
         default: return '';
       }
     })();
@@ -1660,7 +1661,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <li><strong>error</strong> (string): Error state message</li>
           <li><strong>onChange</strong> (function): Callback when value changes in editable mode</li>
           {type === 'choice' && <li><strong>choices</strong> (array): Choice options - {`Array<{ label: string; value: string | number }>`}</li>}
-          {type === 'relationship' && <li><strong>model</strong> (string): Target model name for automatic option loading</li>}
+          {type === 'relationship' && <li><strong>model</strong> (string, <strong>REQUIRED</strong>): Target model name for automatic option loading, pagination, and search filtering</li>}
         </ul>
       </Paragraph>
 
@@ -2052,7 +2053,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
       children: createTypeSection(
         'relationship',
         'Relationship',
-        'Relationship fields handle connections to other entities. Feature search functionality and support both single and multi-select relationships.',
+        'Relationship fields automatically handle connections to other entities by retrieving, paginating, and filtering data based on the configured model. Simply specify the model name - options, search, and pagination are managed automatically. No need to manually provide options!',
         'relationship',
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={8}>
@@ -2060,13 +2061,15 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
             <DataField 
               label="Manager" 
               value={1} 
-              type="relationship" 
+              type="relationship"
+              model="users"
               mode="readonly"
             />
             <DataField 
               label="Manager" 
               value={1} 
-              type="relationship" 
+              type="relationship"
+              model="users"
               mode="editable"
               onChange={(value) => console.log('Manager:', value)}
             />
@@ -2076,14 +2079,16 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
             <DataField 
               label="Customers" 
               value={[1, 2]} 
-              type="relationship" 
+              type="relationship"
+              model="customers"
               mode="readonly"
               multiple
             />
             <DataField 
               label="Team Members" 
               value={[1]} 
-              type="relationship" 
+              type="relationship"
+              model="users"
               mode="editable"
               multiple
               onChange={(value) => console.log('Team:', value)}
@@ -2094,7 +2099,8 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
             <DataField 
               label="Assigned To" 
               value={2} 
-              type="relationship" 
+              type="relationship"
+              model="users"
               mode="editable"
               helpText="Search and select user"
               onChange={(value) => console.log('Assigned:', value)}

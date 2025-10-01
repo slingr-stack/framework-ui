@@ -17,6 +17,8 @@ export interface DataFieldProps {
   mode?: 'editable' | 'readonly';
   /** Choice options for choice type fields */
   choices?: Array<{ label: string; value: string | number }>;
+  /** Model name for relationship fields - REQUIRED for type='relationship'. Options are automatically retrieved, paginated, and filtered based on model configuration */
+  model?: string;
   /** Whether the field supports multiple values (array) */
   multiple?: boolean;
   /** Optional help text tooltip */
@@ -45,6 +47,7 @@ export const DataField: React.FC<DataFieldProps> = ({
   type = 'text',
   mode = 'readonly',
   choices = [],
+  model,
   multiple = false,
   helpText,
   labelPosition = 'left',
