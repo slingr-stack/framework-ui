@@ -1113,6 +1113,44 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
     </Button>
   );
 
+  // Helper function to get template based on field type
+  const getCodeTemplate = (type: string, mode: string = 'readonly', multiple: boolean = false) => {
+    const valueExample = (() => {
+      switch (type) {
+        case 'text': return multiple ? '["tag1", "tag2"]' : '"Sample text"';
+        case 'uuid': return '"a1b2c3d4-e5f6-7890-abcd-ef1234567890"';
+        case 'email': return multiple ? '["user@example.com", "admin@example.com"]' : '"user@example.com"';
+        case 'html': return '"<p>Rich <strong>text</strong></p>"';
+        case 'number': return multiple ? '[10, 20, 30]' : '42';
+        case 'integer': return multiple ? '[1, 2, 3]' : '5';
+        case 'decimal': return multiple ? '[4.5, 3.8, 4.9]' : '4.8';
+        case 'money': return multiple ? '[1000, 2500, 750]' : '1250';
+        case 'datetime': return multiple ? '["2023-01-15", "2023-12-25"]' : '"2023-01-15"';
+        case 'boolean': return 'true';
+        case 'choice': return multiple ? '["option1", "option2"]' : '"option1"';
+        case 'relationship': return multiple ? '[1, 2]' : '1';
+        default: return '"value"';
+      }
+    })();
+
+    const additionalProps = (() => {
+      switch (type) {
+        case 'choice': return '\n  choices={choiceOptions}';
+        case 'relationship': return '\n  relationshipOptions={relationshipOptions}';
+        default: return '';
+      }
+    })();
+
+    const multipleAttr = multiple && type !== 'boolean' ? '\n  multiple' : '';
+    const modeAttr = mode === 'editable' ? '\n  mode="editable"\n  onChange={(value) => console.log(value)}' : '';
+
+    return `<DataField
+  label="Field Label"
+  value=${valueExample}
+  type="${type}"${modeAttr}${multipleAttr}${additionalProps}
+/>`;
+  };
+
   // Helper function to create section content for each data type
   const createTypeSection = (
     type: string,
@@ -1128,6 +1166,42 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
     >
       <Paragraph>{description}</Paragraph>
       
+      <Title level={5}>Code Template</Title>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={8}>
+          <AntText strong>Readonly</AntText>
+          <SyntaxHighlighter 
+            language="typescript" 
+            style={tomorrow}
+            customStyle={{ fontSize: '12px', margin: '8px 0', borderRadius: '4px' }}
+          >
+            {getCodeTemplate(type, 'readonly', false)}
+          </SyntaxHighlighter>
+        </Col>
+        <Col xs={24} lg={8}>
+          <AntText strong>Editable</AntText>
+          <SyntaxHighlighter 
+            language="typescript" 
+            style={tomorrow}
+            customStyle={{ fontSize: '12px', margin: '8px 0', borderRadius: '4px' }}
+          >
+            {getCodeTemplate(type, 'editable', false)}
+          </SyntaxHighlighter>
+        </Col>
+        {type !== 'boolean' && (
+          <Col xs={24} lg={8}>
+            <AntText strong>Multi-valued</AntText>
+            <SyntaxHighlighter 
+              language="typescript" 
+              style={tomorrow}
+              customStyle={{ fontSize: '12px', margin: '8px 0', borderRadius: '4px' }}
+            >
+              {getCodeTemplate(type, 'readonly', true)}
+            </SyntaxHighlighter>
+          </Col>
+        )}
+      </Row>
+
       <Title level={5}>Configuration Properties</Title>
       <Paragraph>
         <ul>
@@ -1232,6 +1306,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
             <DataField label="Tags" value={["frontend", "backend", "full-stack"]} type="text" mode="readonly" multiple />
+            <DataField label="Keywords" value={["react", "typescript"]} type="text" mode="editable" multiple onChange={(value) => console.log('Keywords:', value)} />
           </Col>
         </Row>
       )
@@ -1277,6 +1352,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
             <DataField label="Contact Emails" value={[mockUserData.email, 'jane@example.com']} type="email" mode="readonly" multiple />
+            <DataField label="Notification Emails" value={['admin@example.com']} type="email" mode="editable" multiple onChange={(value) => console.log('Emails:', value)} />
           </Col>
           <Col xs={24} lg={8}>
             <AntText strong>With Validation</AntText>
@@ -1327,6 +1403,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
             <DataField label="Measurements" value={[87.5, 92.1, 78.9]} type="number" mode="readonly" multiple suffix=" cm" />
+            <DataField label="Test Scores" value={[85, 92]} type="number" mode="editable" multiple onChange={(value) => console.log('Scores:', value)} />
           </Col>
         </Row>
       )
@@ -1353,6 +1430,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
             <DataField label="Monthly Days" value={[22, 20, 23, 21]} type="integer" mode="readonly" multiple suffix=" days" />
+            <DataField label="Project Hours" value={[40, 35]} type="integer" mode="editable" multiple suffix=" hrs" onChange={(value) => console.log('Hours:', value)} />
           </Col>
         </Row>
       )
@@ -1379,6 +1457,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
             <DataField label="Performance Scores" value={[4.8, 4.2, 4.9, 4.6]} type="decimal" mode="readonly" multiple suffix="/5" />
+            <DataField label="Monthly Ratings" value={[4.5, 4.8]} type="decimal" mode="editable" multiple suffix="/5" onChange={(value) => console.log('Ratings:', value)} />
           </Col>
         </Row>
       )
@@ -1405,6 +1484,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
             <DataField label="Quarterly Bonuses" value={[5000, 3000, 4000, 6000]} type="money" mode="readonly" multiple />
+            <DataField label="Expenses" value={[1200, 800]} type="money" mode="editable" multiple onChange={(value) => console.log('Expenses:', value)} />
           </Col>
         </Row>
       )
@@ -1431,6 +1511,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
             <DataField label="Milestones" value={["2023-01-15", "2023-06-15", "2023-12-15"]} type="datetime" mode="readonly" multiple />
+            <DataField label="Deadlines" value={["2023-03-01", "2023-06-01"]} type="datetime" mode="editable" multiple onChange={(value) => console.log('Deadlines:', value)} />
           </Col>
         </Row>
       )
