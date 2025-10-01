@@ -75,6 +75,9 @@ const mockCustomers = [
 const codeExamples = {
   text: `// Text Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -98,6 +101,41 @@ const FETCH_USER = gql\`
     }
   }
 \`;
+
+const UPDATE_USER = gql\`
+  mutation UpdateUser($id: ID!, $name: String!) {
+    updateUser(id: $id, name: $name) {
+      id
+      name
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserNameField({ userId }) {
+  const { data, loading, error } = useQuery(FETCH_USER, {
+    variables: { id: userId }
+  });
+  
+  const [updateUser] = useMutation(UPDATE_USER, {
+    onCompleted: () => message.success('Name updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Full Name" 
+      value={data?.user?.name} 
+      type="text" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      onChange={(value) => updateUser({ 
+        variables: { id: userId, name: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -148,6 +186,8 @@ const FETCH_USER = gql\`
 
   uuid: `// UUID Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery } from '@apollo/client';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -168,6 +208,24 @@ const FETCH_RECORD = gql\`
     }
   }
 \`;
+
+// Complete Component Usage:
+function RecordIdField({ recordId }) {
+  const { data, loading, error } = useQuery(FETCH_RECORD, {
+    variables: { id: recordId }
+  });
+
+  return (
+    <DataField 
+      label="Record ID" 
+      value={data?.record?.id} 
+      type="uuid" 
+      mode="readonly"
+      loading={loading}
+      error={error?.message}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -208,6 +266,9 @@ const FETCH_RECORD = gql\`
 
   email: `// Email Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -229,6 +290,41 @@ const FETCH_USER = gql\`
     }
   }
 \`;
+
+const UPDATE_EMAIL = gql\`
+  mutation UpdateEmail($id: ID!, $email: String!) {
+    updateUser(id: $id, email: $email) {
+      id
+      email
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserEmailField({ userId }) {
+  const { data, loading, error } = useQuery(FETCH_USER, {
+    variables: { id: userId }
+  });
+  
+  const [updateEmail] = useMutation(UPDATE_EMAIL, {
+    onCompleted: () => message.success('Email updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Email Address" 
+      value={data?.user?.email} 
+      type="email" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      onChange={(value) => updateEmail({ 
+        variables: { id: userId, email: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -287,6 +383,9 @@ const [updateEmail] = useMutation(UPDATE_USER_EMAIL, {
 
   html: `// HTML Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -308,6 +407,42 @@ const FETCH_CONTENT = gql\`
     }
   }
 \`;
+
+const UPDATE_CONTENT = gql\`
+  mutation UpdateContent($id: ID!, $description: String!) {
+    updateContent(id: $id, description: $description) {
+      id
+      description
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function ContentDescriptionField({ contentId }) {
+  const { data, loading, error } = useQuery(FETCH_CONTENT, {
+    variables: { id: contentId }
+  });
+  
+  const [updateContent] = useMutation(UPDATE_CONTENT, {
+    onCompleted: () => message.success('Content updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Description" 
+      value={data?.content?.description} 
+      type="html" 
+      mode="editable"
+      labelPosition="top"
+      loading={loading}
+      error={error?.message}
+      onChange={(value) => updateContent({ 
+        variables: { id: contentId, description: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -363,6 +498,9 @@ const [updateContent] = useMutation(UPDATE_CONTENT, {
 
   number: `// Number Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -386,6 +524,42 @@ const FETCH_METRICS = gql\`
     }
   }
 \`;
+
+const UPDATE_SCORE = gql\`
+  mutation UpdateScore($id: ID!, $score: Float!) {
+    updateMetrics(id: $id, score: $score) {
+      id
+      score
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function MetricsScoreField({ metricsId }) {
+  const { data, loading, error } = useQuery(FETCH_METRICS, {
+    variables: { id: metricsId }
+  });
+  
+  const [updateScore] = useMutation(UPDATE_SCORE, {
+    onCompleted: () => message.success('Score updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Performance Score" 
+      value={data?.metrics?.score} 
+      type="number" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      helpText="Score from 0 to 100"
+      onChange={(value) => updateScore({ 
+        variables: { id: metricsId, score: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -440,6 +614,9 @@ const FETCH_METRICS = gql\`
 
   integer: `// Integer Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -463,6 +640,42 @@ const FETCH_COUNTS = gql\`
     }
   }
 \`;
+
+const UPDATE_COUNT = gql\`
+  mutation UpdateCount($id: ID!, $count: Int!) {
+    updateStats(id: $id, userCount: $count) {
+      id
+      userCount
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserCountField({ statsId }) {
+  const { data, loading, error } = useQuery(FETCH_COUNTS, {
+    variables: { id: statsId }
+  });
+  
+  const [updateCount] = useMutation(UPDATE_COUNT, {
+    onCompleted: () => message.success('Count updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Active Users" 
+      value={data?.stats?.userCount} 
+      type="integer" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      helpText="Number of active users"
+      onChange={(value) => updateCount({ 
+        variables: { id: statsId, count: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -522,6 +735,9 @@ const [updateStock] = useMutation(UPDATE_STOCK, {
 
   decimal: `// Decimal Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -545,6 +761,42 @@ const FETCH_RATINGS = gql\`
     }
   }
 \`;
+
+const UPDATE_RATING = gql\`
+  mutation UpdateRating($id: ID!, $rating: Float!) {
+    updateProduct(id: $id, rating: $rating) {
+      id
+      rating
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function ProductRatingField({ productId }) {
+  const { data, loading, error } = useQuery(FETCH_RATINGS, {
+    variables: { id: productId }
+  });
+  
+  const [updateRating] = useMutation(UPDATE_RATING, {
+    onCompleted: () => message.success('Rating updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Customer Rating" 
+      value={data?.product?.rating} 
+      type="decimal" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      helpText="Rating from 1.0 to 5.0"
+      onChange={(value) => updateRating({ 
+        variables: { id: productId, rating: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -603,6 +855,9 @@ const FETCH_RATINGS = gql\`
 
   money: `// Money Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -625,6 +880,42 @@ const FETCH_FINANCIALS = gql\`
     }
   }
 \`;
+
+const UPDATE_SALARY = gql\`
+  mutation UpdateSalary($id: ID!, $salary: Float!) {
+    updateUser(id: $id, salary: $salary) {
+      id
+      salary
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserSalaryField({ userId }) {
+  const { data, loading, error } = useQuery(FETCH_FINANCIALS, {
+    variables: { id: userId }
+  });
+  
+  const [updateSalary] = useMutation(UPDATE_SALARY, {
+    onCompleted: () => message.success('Salary updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Annual Salary" 
+      value={data?.user?.salary} 
+      type="money" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      helpText="Gross annual salary"
+      onChange={(value) => updateSalary({ 
+        variables: { id: userId, salary: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -685,6 +976,9 @@ const [updateSalary] = useMutation(UPDATE_SALARY, {
 
   datetime: `// DateTime Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -706,6 +1000,42 @@ const FETCH_DATES = gql\`
     }
   }
 \`;
+
+const UPDATE_JOIN_DATE = gql\`
+  mutation UpdateJoinDate($id: ID!, $joinDate: DateTime!) {
+    updateUser(id: $id, joinDate: $joinDate) {
+      id
+      joinDate
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserJoinDateField({ userId }) {
+  const { data, loading, error } = useQuery(FETCH_DATES, {
+    variables: { id: userId }
+  });
+  
+  const [updateJoinDate] = useMutation(UPDATE_JOIN_DATE, {
+    onCompleted: () => message.success('Join date updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Join Date" 
+      value={data?.user?.joinDate} 
+      type="datetime" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      helpText="Date when user joined the company"
+      onChange={(value) => updateJoinDate({ 
+        variables: { id: userId, joinDate: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -769,6 +1099,9 @@ const [updateDeadline] = useMutation(UPDATE_PROJECT_DEADLINE, {
 
   boolean: `// Boolean Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -790,6 +1123,42 @@ const FETCH_STATUS = gql\`
     }
   }
 \`;
+
+const UPDATE_STATUS = gql\`
+  mutation UpdateStatus($id: ID!, $isActive: Boolean!) {
+    updateUser(id: $id, isActive: $isActive) {
+      id
+      isActive
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserActiveStatusField({ userId }) {
+  const { data, loading, error } = useQuery(FETCH_STATUS, {
+    variables: { id: userId }
+  });
+  
+  const [updateStatus] = useMutation(UPDATE_STATUS, {
+    onCompleted: () => message.success('Status updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Active Status" 
+      value={data?.user?.isActive} 
+      type="boolean" 
+      mode="editable"
+      loading={loading}
+      error={error?.message}
+      helpText="Whether the user account is active"
+      onChange={(value) => updateStatus({ 
+        variables: { id: userId, isActive: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -860,6 +1229,9 @@ const [updateAccountStatus] = useMutation(UPDATE_ACCOUNT_STATUS, {
 
   choice: `// Choice Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -897,6 +1269,50 @@ const FETCH_USER = gql\`
     }
   }
 \`;
+
+const UPDATE_DEPARTMENT = gql\`
+  mutation UpdateDepartment($id: ID!, $department: String!) {
+    updateUser(id: $id, department: $department) {
+      id
+      department
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserDepartmentField({ userId }) {
+  const departmentChoices = [
+    { label: 'Engineering', value: 'engineering' },
+    { label: 'Design', value: 'design' },
+    { label: 'Marketing', value: 'marketing' },
+    { label: 'Sales', value: 'sales' }
+  ];
+
+  const { data, loading, error } = useQuery(FETCH_USER, {
+    variables: { id: userId }
+  });
+  
+  const [updateDepartment] = useMutation(UPDATE_DEPARTMENT, {
+    onCompleted: () => message.success('Department updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  return (
+    <DataField 
+      label="Department" 
+      value={data?.user?.department} 
+      type="choice" 
+      mode="editable"
+      choices={departmentChoices}
+      loading={loading}
+      error={error?.message}
+      helpText="Select user's department"
+      onChange={(value) => updateDepartment({ 
+        variables: { id: userId, department: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
@@ -964,6 +1380,9 @@ const departmentOptions = departments?.departments?.map(dept => ({
 
   relationship: `// Relationship Field Type - Configuration and Examples
 import { DataField } from '../components/slingr';
+import { useQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
+import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
@@ -1003,8 +1422,61 @@ const FETCH_RELATIONSHIPS = gql\`
         name
       }
     }
+    
+    # Fetch available options
+    managers {
+      id
+      name
+    }
   }
 \`;
+
+const UPDATE_MANAGER = gql\`
+  mutation UpdateManager($id: ID!, $managerId: ID!) {
+    updateUser(id: $id, managerId: $managerId) {
+      id
+      manager {
+        id
+        name
+      }
+    }
+  }
+\`;
+
+// Complete Component Usage:
+function UserManagerField({ userId }) {
+  const { data, loading, error } = useQuery(FETCH_RELATIONSHIPS, {
+    variables: { id: userId }
+  });
+  
+  const [updateManager] = useMutation(UPDATE_MANAGER, {
+    onCompleted: () => message.success('Manager updated successfully'),
+    onError: (error) => message.error(\`Failed to update: \${error.message}\`)
+  });
+
+  // Transform managers data into options format
+  const managerOptions = data?.managers?.map(manager => ({
+    id: manager.id,
+    label: manager.name,
+    value: manager.id
+  })) || [];
+
+  return (
+    <DataField 
+      label="Manager" 
+      value={data?.user?.manager?.id} 
+      type="relationship" 
+      mode="editable"
+      relationshipOptions={managerOptions}
+      loading={loading}
+      error={error?.message}
+      helpText="Select user's direct manager"
+      onChange={(value) => updateManager({ 
+        variables: { id: userId, managerId: value } 
+      })}
+    />
+  );
+}
 
 // Simple Examples:
 <DataField 
