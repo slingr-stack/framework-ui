@@ -1211,15 +1211,10 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <li><strong>mode</strong> ('readonly' | 'editable'): Display mode</li>
           {type !== 'boolean' && <li><strong>multiple</strong> (boolean): Whether field supports multiple values (array)</li>}
           <li><strong>helpText</strong> (string): Optional help text tooltip</li>
+          <li><strong>labelPosition</strong> ('left' | 'top'): Position of label relative to field (default: 'left')</li>
           <li><strong>loading</strong> (boolean): Loading state</li>
           <li><strong>error</strong> (string): Error state message</li>
           <li><strong>onChange</strong> (function): Callback when value changes in editable mode</li>
-          {(type === 'text' || type === 'number' || type === 'integer' || type === 'decimal') && 
-            <>
-              <li><strong>prefix</strong> (string): Optional prefix for the value</li>
-              <li><strong>suffix</strong> (string): Optional suffix for the value</li>
-            </>
-          }
           {type === 'choice' && <li><strong>choices</strong> (array): Choice options - {`Array<{ label: string; value: string | number }>`}</li>}
           {type === 'relationship' && <li><strong>relationshipOptions</strong> (array): Relationship options - {`Array<{ label: string; value: string | number; id?: string | number }>`}</li>}
         </ul>
@@ -1299,9 +1294,9 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
             <DataField label="Name" value="John Doe" type="text" mode="editable" onChange={(value) => console.log('Name:', value)} />
           </Col>
           <Col xs={24} lg={8}>
-            <AntText strong>With Prefix/Suffix</AntText>
-            <DataField label="Username" value="johndoe" type="text" mode="readonly" prefix="@" />
-            <DataField label="File" value="document" type="text" mode="editable" suffix=".pdf" onChange={(value) => console.log('File:', value)} />
+            <AntText strong>Label Position</AntText>
+            <DataField label="Name" value="John Doe" type="text" mode="readonly" labelPosition="top" />
+            <DataField label="Email" value="john@example.com" type="email" mode="editable" labelPosition="top" onChange={(value) => console.log('Email:', value)} />
           </Col>
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
@@ -1372,11 +1367,11 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={12}>
             <AntText strong>Readonly HTML</AntText>
-            <DataField label="Bio" value={mockUserData.bio} type="html" mode="readonly" layout="vertical" />
+            <DataField label="Bio" value={mockUserData.bio} type="html" mode="readonly" labelPosition="top" />
           </Col>
           <Col xs={24} lg={12}>
             <AntText strong>Editable HTML</AntText>
-            <DataField label="Description" value="<p>Enter your <strong>description</strong> here</p>" type="html" mode="editable" layout="vertical" onChange={(value) => console.log('HTML:', value)} />
+            <DataField label="Description" value="<p>Enter your <strong>description</strong> here</p>" type="html" mode="editable" labelPosition="top" onChange={(value) => console.log('HTML:', value)} />
           </Col>
         </Row>
       )
@@ -1396,13 +1391,13 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
             <DataField label="Score" value={87.5} type="number" mode="editable" onChange={(value) => console.log('Score:', value)} />
           </Col>
           <Col xs={24} lg={8}>
-            <AntText strong>With Suffix</AntText>
-            <DataField label="Temperature" value={23.5} type="number" mode="readonly" suffix="°C" />
-            <DataField label="Progress" value={75} type="number" mode="editable" suffix="%" onChange={(value) => console.log('Progress:', value)} />
+            <AntText strong>Different Types</AntText>
+            <DataField label="Temperature" value={23.5} type="number" mode="readonly" />
+            <DataField label="Progress" value={75} type="number" mode="editable" onChange={(value) => console.log('Progress:', value)} />
           </Col>
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
-            <DataField label="Measurements" value={[87.5, 92.1, 78.9]} type="number" mode="readonly" multiple suffix=" cm" />
+            <DataField label="Measurements" value={[87.5, 92.1, 78.9]} type="number" mode="readonly" multiple />
             <DataField label="Test Scores" value={[85, 92]} type="number" mode="editable" multiple onChange={(value) => console.log('Scores:', value)} />
           </Col>
         </Row>
@@ -1423,14 +1418,14 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
             <DataField label="Quantity" value={15} type="integer" mode="editable" onChange={(value) => console.log('Quantity:', value)} />
           </Col>
           <Col xs={24} lg={8}>
-            <AntText strong>With Suffix</AntText>
-            <DataField label="Work Days" value={mockUserData.workDays} type="integer" mode="readonly" suffix=" days" />
-            <DataField label="Team Size" value={5} type="integer" mode="editable" suffix=" members" onChange={(value) => console.log('Team Size:', value)} />
+            <AntText strong>Different Uses</AntText>
+            <DataField label="Work Days" value={mockUserData.workDays} type="integer" mode="readonly" />
+            <DataField label="Team Size" value={5} type="integer" mode="editable" onChange={(value) => console.log('Team Size:', value)} />
           </Col>
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
-            <DataField label="Monthly Days" value={[22, 20, 23, 21]} type="integer" mode="readonly" multiple suffix=" days" />
-            <DataField label="Project Hours" value={[40, 35]} type="integer" mode="editable" multiple suffix=" hrs" onChange={(value) => console.log('Hours:', value)} />
+            <DataField label="Monthly Days" value={[22, 20, 23, 21]} type="integer" mode="readonly" multiple />
+            <DataField label="Project Hours" value={[40, 35]} type="integer" mode="editable" multiple onChange={(value) => console.log('Hours:', value)} />
           </Col>
         </Row>
       )
@@ -1446,18 +1441,18 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={8}>
             <AntText strong>Simple Decimal</AntText>
-            <DataField label="Rating" value={mockUserData.rating} type="decimal" mode="readonly" suffix="/5" />
+            <DataField label="Rating" value={mockUserData.rating} type="decimal" mode="readonly" />
             <DataField label="Rating" value={mockUserData.rating} type="decimal" mode="editable" onChange={(value) => console.log('Rating:', value)} />
           </Col>
           <Col xs={24} lg={8}>
             <AntText strong>Percentages</AntText>
-            <DataField label="Completion" value={87.5} type="decimal" mode="readonly" suffix="%" />
-            <DataField label="Accuracy" value={95.2} type="decimal" mode="editable" suffix="%" onChange={(value) => console.log('Accuracy:', value)} />
+            <DataField label="Completion" value={87.5} type="decimal" mode="readonly" />
+            <DataField label="Accuracy" value={95.2} type="decimal" mode="editable" onChange={(value) => console.log('Accuracy:', value)} />
           </Col>
           <Col xs={24} lg={8}>
             <AntText strong>Multi-valued</AntText>
-            <DataField label="Performance Scores" value={[4.8, 4.2, 4.9, 4.6]} type="decimal" mode="readonly" multiple suffix="/5" />
-            <DataField label="Monthly Ratings" value={[4.5, 4.8]} type="decimal" mode="editable" multiple suffix="/5" onChange={(value) => console.log('Ratings:', value)} />
+            <DataField label="Performance Scores" value={[4.8, 4.2, 4.9, 4.6]} type="decimal" mode="readonly" multiple />
+            <DataField label="Monthly Ratings" value={[4.5, 4.8]} type="decimal" mode="editable" multiple onChange={(value) => console.log('Ratings:', value)} />
           </Col>
         </Row>
       )

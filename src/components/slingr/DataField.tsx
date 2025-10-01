@@ -1,6 +1,6 @@
 import React from 'react';
-import { Typography, Space, Tooltip, Input, Select, Switch, DatePicker, InputNumber } from 'antd';
-import { InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { Typography, Space, Tooltip, Input, Select, Switch, DatePicker, InputNumber, Button } from 'antd';
+import { InfoCircleOutlined, SearchOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const { Text } = Typography;
@@ -23,18 +23,14 @@ export interface DataFieldProps {
   multiple?: boolean;
   /** Optional help text tooltip */
   helpText?: string;
-  /** Whether to display in vertical or horizontal layout */
-  layout?: 'horizontal' | 'vertical';
+  /** Label position - top or left, default is left */
+  labelPosition?: 'top' | 'left';
   /** Custom styling */
   style?: React.CSSProperties;
   /** Loading state */
   loading?: boolean;
   /** Error state */
   error?: string;
-  /** Optional prefix for the value */
-  prefix?: string;
-  /** Optional suffix for the value */
-  suffix?: string;
   /** Callback when value changes in editable mode */
   onChange?: (value: string | number | boolean | Date | Array<any> | null) => void;
 }
@@ -54,12 +50,10 @@ export const DataField: React.FC<DataFieldProps> = ({
   relationshipOptions = [],
   multiple = false,
   helpText,
-  layout = 'horizontal',
+  labelPosition = 'left',
   style,
   loading = false,
   error,
-  prefix,
-  suffix,
   onChange
 }) => {
   const formatReadonlyValue = (val: typeof value): string => {
@@ -122,59 +116,177 @@ export const DataField: React.FC<DataFieldProps> = ({
   };
 
   const renderEditableField = () => {
+    // For boolean type (no multi-valued support)
+    if (type === 'boolean') {
+      return (
+        <Switch 
+          checked={Boolean(value)} 
+          onChange={(checked) => onChange?.(checked)}
+        />
+      );
+    }
+
+    // For choice and relationship types, use existing select implementation
+    if (type === 'choice') {
+      return (
+        <Select 
+          value={Array.isArray(value) ? value : value as string | number}
+          mode={multiple ? 'multiple' : undefined}
+          style={{ width: '100%' }}
+          placeholder={helpText}
+          onChange={(val) => onChange?.(val)}
+        >
+          {choices.map(choice => (
+            <Option key={choice.value} value={choice.value}>
+              {choice.label}
+            </Option>
+          ))}
+        </Select>
+      );
+    }
+
+    if (type === 'relationship') {
+      return (
+        <Select 
+          value={Array.isArray(value) ? value : value as string | number}
+          mode={multiple ? 'multiple' : undefined}
+          style={{ width: '100%' }}
+          placeholder={helpText}
+          showSearch
+          filterOption={(input, option) =>
+            String(option?.children)?.toLowerCase().includes(input.toLowerCase())
+          }
+          suffixIcon={<SearchOutlined />}
+          onChange={(val) => onChange?.(val)}
+        >
+          {relationshipOptions.map(option => (
+            <Option key={option.value} value={option.value}>
+              {option.label}
+            </Option>
+          ))}
+        </Select>
+      );
+    }
+
+    // For multi-valued fields (text, email, number, etc.), create individual inputs
+    if (multiple) {
+      const arrayValue = Array.isArray(value) ? value : (value !== undefined && value !== null ? [value] : []);
+      
+      const handleValueChange = (index: number, newValue: any) => {
+        const newArray = [...arrayValue];
+        newArray[index] = newValue;
+        onChange?.(newArray);
+      };
+
+      const handleAddValue = () => {
+        const defaultValue = type === 'number' || type === 'integer' || type === 'decimal' || type === 'money' ? 0 : '';
+        onChange?.([...arrayValue, defaultValue]);
+      };
+
+      const handleRemoveValue = (index: number) => {
+        const newArray = arrayValue.filter((_, i) => i !== index);
+        onChange?.(newArray);
+      };
+
+      const renderSingleInput = (val: any, index: number) => {
+        const commonProps = {
+          value: val,
+          style: { width: '100%' },
+          placeholder: helpText
+        };
+
+        switch (type) {
+          case 'datetime':
+            return (
+              <DatePicker 
+                {...commonProps}
+                showTime
+                value={val ? dayjs(val) : null}
+                onChange={(date) => handleValueChange(index, date?.toDate() || null)}
+              />
+            );
+          
+          case 'number':
+          case 'integer':
+          case 'decimal':
+          case 'money':
+            return (
+              <InputNumber 
+                {...commonProps}
+                precision={type === 'integer' ? 0 : type === 'money' ? 2 : undefined}
+                formatter={type === 'money' ? (value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : undefined}
+                parser={type === 'money' ? (value) => value!.replace(/\$\s?|(,*)/g, '') as any : undefined}
+                onChange={(newVal) => handleValueChange(index, newVal)}
+              />
+            );
+          
+          case 'email':
+            return (
+              <Input 
+                {...commonProps}
+                type="email"
+                onChange={(e) => handleValueChange(index, e.target.value)}
+              />
+            );
+          
+          case 'html':
+            return (
+              <Input.TextArea 
+                {...commonProps}
+                rows={2}
+                onChange={(e) => handleValueChange(index, e.target.value)}
+              />
+            );
+          
+          case 'text':
+          case 'uuid':
+          default:
+            return (
+              <Input 
+                {...commonProps}
+                onChange={(e) => handleValueChange(index, e.target.value)}
+              />
+            );
+        }
+      };
+
+      return (
+        <div>
+          {arrayValue.map((val, index) => (
+            <div key={index} style={{ display: 'flex', marginBottom: 8, alignItems: 'center' }}>
+              <div style={{ flex: 1, marginRight: 8 }}>
+                {renderSingleInput(val, index)}
+              </div>
+              <Button 
+                type="text" 
+                danger 
+                size="small"
+                icon={<DeleteOutlined />}
+                onClick={() => handleRemoveValue(index)}
+                disabled={arrayValue.length <= 1}
+              />
+            </div>
+          ))}
+          <Button 
+            type="dashed" 
+            icon={<PlusOutlined />} 
+            onClick={handleAddValue}
+            style={{ width: '100%' }}
+          >
+            Add {type}
+          </Button>
+        </div>
+      );
+    }
+
+    // Single value fields
     const commonProps = {
-      value: Array.isArray(value) ? value : value,
-      onChange,
+      value: Array.isArray(value) ? value[0] : value,
       style: { width: '100%' },
       placeholder: helpText
     };
 
     switch (type) {
-      case 'boolean':
-        return (
-          <Switch 
-            checked={Boolean(value)} 
-            onChange={(checked) => onChange?.(checked)}
-          />
-        );
-      
-      case 'choice':
-        return (
-          <Select 
-            {...commonProps} 
-            value={Array.isArray(value) ? value : value as string | number}
-            mode={multiple ? 'multiple' : undefined}
-            onChange={(val) => onChange?.(val)}
-          >
-            {choices.map(choice => (
-              <Option key={choice.value} value={choice.value}>
-                {choice.label}
-              </Option>
-            ))}
-          </Select>
-        );
-      
-      case 'relationship':
-        return (
-          <Select 
-            {...commonProps}
-            value={Array.isArray(value) ? value : value as string | number}
-            mode={multiple ? 'multiple' : undefined}
-            showSearch
-            filterOption={(input, option) =>
-              String(option?.children)?.toLowerCase().includes(input.toLowerCase())
-            }
-            suffixIcon={<SearchOutlined />}
-            onChange={(val) => onChange?.(val)}
-          >
-            {relationshipOptions.map(option => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
-              </Option>
-            ))}
-          </Select>
-        );
-      
       case 'datetime':
         return (
           <DatePicker 
@@ -192,7 +304,6 @@ export const DataField: React.FC<DataFieldProps> = ({
         return (
           <InputNumber 
             {...commonProps}
-            value={value as number}
             precision={type === 'integer' ? 0 : type === 'money' ? 2 : undefined}
             formatter={type === 'money' ? (value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : undefined}
             parser={type === 'money' ? (value) => value!.replace(/\$\s?|(,*)/g, '') as any : undefined}
@@ -248,10 +359,9 @@ export const DataField: React.FC<DataFieldProps> = ({
 
     // Readonly mode
     const displayValue = formatReadonlyValue(value);
-    const fullValue = `${prefix || ''}${displayValue}${suffix || ''}`;
     
     if (type === 'email' && value && !Array.isArray(value)) {
-      return <a href={`mailto:${value}`}>{fullValue}</a>;
+      return <a href={`mailto:${value}`}>{displayValue}</a>;
     }
     
     if (type === 'html' && value && !Array.isArray(value)) {
@@ -282,10 +392,10 @@ export const DataField: React.FC<DataFieldProps> = ({
       );
     }
     
-    return <Text>{fullValue}</Text>;
+    return <Text>{displayValue}</Text>;
   };
 
-  if (layout === 'vertical') {
+  if (labelPosition === 'top') {
     return (
       <div style={style}>
         <div style={{ marginBottom: 4 }}>
