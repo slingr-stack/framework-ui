@@ -57,6 +57,21 @@ const mockSkills = [
   { id: 5, label: 'Python', value: 'python' },
 ];
 
+// Mock relationship options - simulates data fetched from model
+const mockUsers = [
+  { id: 1, label: 'Jane Smith', value: 1 },
+  { id: 2, label: 'Bob Johnson', value: 2 },
+  { id: 3, label: 'Alice Williams', value: 3 },
+  { id: 4, label: 'Charlie Brown', value: 4 }
+];
+
+const mockCustomers = [
+  { id: 1, label: 'Acme Corp', value: 1 },
+  { id: 2, label: 'Tech Solutions Inc', value: 2 },
+  { id: 3, label: 'Global Industries', value: 3 },
+  { id: 4, label: 'Startup Ventures', value: 4 }
+];
+
 // Code examples for each data field type
 const codeExamples = {
   text: `// Text Field Type - Configuration and Examples
@@ -1372,9 +1387,10 @@ import { gql } from '@apollo/client';
 
 // Configuration Properties:
 // - label: string (required)
-// - value: string | number | Array<string | number> | null
+// - value: string | number | Array<string | number> | null (IDs of related entities)
 // - type: 'relationship'
 // - model: string (REQUIRED - target model name for automatic option management)
+// - relationshipOptions: Array<{id, label, value}> (for demo - in production, auto-fetched)
 // - mode: 'readonly' | 'editable'
 // - multiple: boolean (for multi-select relationships)
 // - helpText: string
@@ -1581,7 +1597,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
     const additionalProps = (() => {
       switch (type) {
         case 'choice': return '\n  choices={choiceOptions}';
-        case 'relationship': return '\n  model="users"'; // Model is required for automatic option management
+        case 'relationship': return '\n  model="users"\n  relationshipOptions={userOptions}'; // Model + options for demo
         default: return '';
       }
     })();
@@ -2063,6 +2079,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               value={1} 
               type="relationship"
               model="users"
+              relationshipOptions={mockUsers}
               mode="readonly"
             />
             <DataField 
@@ -2070,6 +2087,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               value={1} 
               type="relationship"
               model="users"
+              relationshipOptions={mockUsers}
               mode="editable"
               onChange={(value) => console.log('Manager:', value)}
             />
@@ -2081,6 +2099,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               value={[1, 2]} 
               type="relationship"
               model="customers"
+              relationshipOptions={mockCustomers}
               mode="readonly"
               multiple
             />
@@ -2089,6 +2108,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               value={[1]} 
               type="relationship"
               model="users"
+              relationshipOptions={mockUsers}
               mode="editable"
               multiple
               onChange={(value) => console.log('Team:', value)}
@@ -2101,6 +2121,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               value={2} 
               type="relationship"
               model="users"
+              relationshipOptions={mockUsers}
               mode="editable"
               helpText="Search and select user"
               onChange={(value) => console.log('Assigned:', value)}
