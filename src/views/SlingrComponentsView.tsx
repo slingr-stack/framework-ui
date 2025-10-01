@@ -1533,7 +1533,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
   // State for multi-valued field examples
   const [textKeywords, setTextKeywords] = useState(['react', 'typescript']);
   const [emailAddresses, setEmailAddresses] = useState(['john@example.com', 'jane@example.com']);
-  const [htmlContents, setHtmlContents] = useState(['<p>Content 1</p>', '<p>Content 2</p>']);
+
   const [numberScores, setNumberScores] = useState([95, 87, 92]);
   const [integerHours, setIntegerHours] = useState([8, 6, 9]);
   const [decimalRatings, setDecimalRatings] = useState([4.8, 4.2, 3.9]);
