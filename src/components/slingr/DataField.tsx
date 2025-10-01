@@ -17,8 +17,6 @@ export interface DataFieldProps {
   mode?: 'editable' | 'readonly';
   /** Choice options for choice type fields */
   choices?: Array<{ label: string; value: string | number }>;
-  /** Relationship options for relationship type fields */
-  relationshipOptions?: Array<{ label: string; value: string | number; id?: string | number }>;
   /** Whether the field supports multiple values (array) */
   multiple?: boolean;
   /** Optional help text tooltip */
@@ -47,7 +45,6 @@ export const DataField: React.FC<DataFieldProps> = ({
   type = 'text',
   mode = 'readonly',
   choices = [],
-  relationshipOptions = [],
   multiple = false,
   helpText,
   labelPosition = 'left',
@@ -65,11 +62,8 @@ export const DataField: React.FC<DataFieldProps> = ({
       
       switch (type) {
         case 'relationship':
-          const relationshipLabels = val.map(v => {
-            const option = relationshipOptions.find(opt => opt.value === v || opt.id === v);
-            return option ? option.label : String(v);
-          });
-          return relationshipLabels.join(', ');
+          // For relationship fields, display values directly since options are managed automatically
+          return val.map(v => String(v)).join(', ');
         case 'choice':
           const choiceLabels = val.map(v => {
             const choice = choices.find(c => c.value === v);
@@ -108,8 +102,8 @@ export const DataField: React.FC<DataFieldProps> = ({
         const choice = choices.find(c => c.value === val);
         return choice ? choice.label : String(val);
       case 'relationship':
-        const relationship = relationshipOptions.find(opt => opt.value === val || opt.id === val);
-        return relationship ? relationship.label : String(val);
+        // For relationship fields, return the value directly since options are managed automatically
+        return String(val);
       default:
         return String(val);
     }
@@ -159,11 +153,7 @@ export const DataField: React.FC<DataFieldProps> = ({
           suffixIcon={<SearchOutlined />}
           onChange={(val) => onChange?.(val)}
         >
-          {relationshipOptions.map(option => (
-            <Option key={option.value} value={option.value}>
-              {option.label}
-            </Option>
-          ))}
+          {/* Options are automatically managed by the model configuration */}
         </Select>
       );
     }
@@ -375,8 +365,8 @@ export const DataField: React.FC<DataFieldProps> = ({
           {value.map((item, index) => {
             let displayItem = item;
             if (type === 'relationship') {
-              const relationship = relationshipOptions.find(opt => opt.value === item || opt.id === item);
-              displayItem = relationship ? relationship.label : String(item);
+              // For relationship fields, display the value directly since options are managed automatically
+              displayItem = String(item);
             } else if (type === 'choice') {
               const choice = choices.find(c => c.value === item);
               displayItem = choice ? choice.label : String(item);

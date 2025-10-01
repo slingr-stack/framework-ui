@@ -1389,7 +1389,6 @@ import { gql } from '@apollo/client';
 // - value: string | number | Array<string | number> | null
 // - type: 'relationship'
 // - mode: 'readonly' | 'editable'
-// - relationshipOptions: Array<{ label: string; value: string | number; id?: string | number }> (required)
 // - multiple: boolean (for multi-select relationships)
 // - helpText: string
 // - loading: boolean
@@ -1397,17 +1396,8 @@ import { gql } from '@apollo/client';
 // - onChange: (value) => void
 
 // Relationship Options Examples:
-const managerOptions = [
-  { id: 1, label: 'Jane Smith', value: 1 },
-  { id: 2, label: 'Bob Johnson', value: 2 },
-  { id: 3, label: 'Sarah Wilson', value: 3 }
-];
-
-const customerOptions = [
-  { id: 1, label: 'Acme Corp', value: 1 },
-  { id: 2, label: 'Tech Solutions Inc', value: 2 },
-  { id: 3, label: 'Global Industries', value: 3 }
-];
+// Options are automatically managed by model configuration
+// No need to provide relationshipOptions prop
 
 // GraphQL Binding Examples:
 const FETCH_RELATIONSHIPS = gql\`
@@ -1467,7 +1457,6 @@ function UserManagerField({ userId }) {
       value={data?.user?.manager?.id} 
       type="relationship" 
       mode="editable"
-      relationshipOptions={managerOptions}
       loading={loading}
       error={error?.message}
       helpText="Select user's direct manager"
@@ -1484,7 +1473,6 @@ function UserManagerField({ userId }) {
   value={1} 
   type="relationship" 
   mode="readonly"
-  relationshipOptions={managerOptions}
 />
 
 <DataField 
@@ -1492,7 +1480,6 @@ function UserManagerField({ userId }) {
   value={1} 
   type="relationship" 
   mode="editable"
-  relationshipOptions={managerOptions}
   onChange={(value) => console.log('Manager changed:', value)}
 />
 
@@ -1502,26 +1489,18 @@ function UserManagerField({ userId }) {
   value={[1, 2]} 
   type="relationship" 
   mode="editable"
-  relationshipOptions={customerOptions}
   multiple
   helpText="Select multiple customers"
   onChange={(value) => setAssignedCustomers(value)}
 />
 
 // Dynamic Relationship Loading:
-const { data: users, loading: usersLoading } = useQuery(FETCH_USERS);
-const userOptions = users?.users?.map(user => ({
-  id: user.id,
-  label: \`\${user.firstName} \${user.lastName}\`,
-  value: user.id
-})) || [];
-
+// Options are automatically loaded from model configuration
 <DataField 
   label="Team Lead" 
   value={teamLead} 
   type="relationship" 
   mode="editable"
-  relationshipOptions={userOptions}
   loading={usersLoading}
   helpText="Select team leader"
   onChange={(value) => {
@@ -1532,14 +1511,12 @@ const userOptions = users?.users?.map(user => ({
 />
 
 // Complex Relationship with Search:
-const [searchUsers, { data: searchResults, loading: searching }] = useLazyQuery(SEARCH_USERS);
-
+// Search functionality is built-in for relationship fields
 <DataField 
   label="Project Members" 
   value={projectMembers} 
   type="relationship" 
   mode="editable"
-  relationshipOptions={searchResults?.searchUsers || []}
   multiple
   loading={searching}
   helpText="Search and select project members"
@@ -1556,7 +1533,6 @@ const [searchUsers, { data: searchResults, loading: searching }] = useLazyQuery(
   value={reportsTo} 
   type="relationship" 
   mode="editable"
-  relationshipOptions={getHierarchyOptions(currentUser.level)}
   helpText="Select direct supervisor"
   error={reportsTo === currentUser.id ? "Cannot report to yourself" : undefined}
   onChange={(value) => setReportsTo(value)}
@@ -1576,10 +1552,11 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
 
   const CodeButton = ({ codeKey, title }: { codeKey: keyof typeof codeExamples; title: string }) => (
     <Button 
-      type="text" 
-      size="small" 
+      type="primary" 
+      size="default" 
       icon={<CodeOutlined />}
       onClick={() => showCodeExample(codeKey, title)}
+      style={{ fontWeight: 'bold' }}
     >
       View Code
     </Button>
@@ -1608,7 +1585,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
     const additionalProps = (() => {
       switch (type) {
         case 'choice': return '\n  choices={choiceOptions}';
-        case 'relationship': return '\n  relationshipOptions={relationshipOptions}';
+        case 'relationship': return ''; // Options are automatically managed by model configuration
         default: return '';
       }
     })();
@@ -1688,7 +1665,7 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
           <li><strong>error</strong> (string): Error state message</li>
           <li><strong>onChange</strong> (function): Callback when value changes in editable mode</li>
           {type === 'choice' && <li><strong>choices</strong> (array): Choice options - {`Array<{ label: string; value: string | number }>`}</li>}
-          {type === 'relationship' && <li><strong>relationshipOptions</strong> (array): Relationship options - {`Array<{ label: string; value: string | number; id?: string | number }>`}</li>}
+          {type === 'relationship' && <li><strong>model</strong> (string): Target model name for automatic option loading</li>}
         </ul>
       </Paragraph>
 
@@ -2090,14 +2067,12 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               value={1} 
               type="relationship" 
               mode="readonly"
-              relationshipOptions={mockManagers}
             />
             <DataField 
               label="Manager" 
               value={1} 
               type="relationship" 
               mode="editable"
-              relationshipOptions={mockManagers}
               onChange={(value) => console.log('Manager:', value)}
             />
           </Col>
@@ -2109,7 +2084,6 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               type="relationship" 
               mode="readonly"
               multiple
-              relationshipOptions={mockCustomers}
             />
             <DataField 
               label="Team Members" 
@@ -2117,7 +2091,6 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               type="relationship" 
               mode="editable"
               multiple
-              relationshipOptions={mockManagers}
               onChange={(value) => console.log('Team:', value)}
             />
           </Col>
@@ -2128,7 +2101,6 @@ export const SlingrComponentsView: ViewComponent = ({ config }) => {
               value={2} 
               type="relationship" 
               mode="editable"
-              relationshipOptions={mockManagers}
               helpText="Search and select user"
               onChange={(value) => console.log('Assigned:', value)}
             />
