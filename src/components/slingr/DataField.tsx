@@ -47,7 +47,6 @@ export const DataField: React.FC<DataFieldProps> = ({
   type = 'text',
   mode = 'readonly',
   choices = [],
-  model,
   multiple = false,
   helpText,
   labelPosition = 'left',
