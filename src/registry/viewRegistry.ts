@@ -6,8 +6,7 @@ import {
   DashboardOutlined,
   FormOutlined,
   ProjectOutlined,
-  AppstoreOutlined,
-  CommentOutlined
+  AppstoreOutlined
 } from '@ant-design/icons';
 import type { ViewConfig, ViewComponent } from '../types/view';
 import { CustomDashboardView } from '../views/CustomDashboardView';
@@ -18,7 +17,6 @@ import { AntDesignLayoutView } from '../views/AntDesignLayoutView';
 import { GridView } from '../views/GridView';
 import { KanbanView } from '../views/KanbanView';
 import { DynamicFormView } from '../views/DynamicFormView';
-import { SlingrComponentsView } from '../views/SlingrComponentsView';
 
 export interface ViewRegistryEntry {
   config: ViewConfig;
@@ -75,16 +73,6 @@ export const viewRegistry: Record<string, ViewRegistryEntry> = {
       category: 'Samples'
     },
     component: FormView
-  },
-  'slingr-components': {
-    config: {
-      id: 'slingr-components',
-      title: 'Components',
-      description: 'Collection of UI components built on Ant Design for seamless backend integration',
-      icon: CommentOutlined,
-      category: 'Slingr' // Move under Slingr section
-    },
-    component: SlingrComponentsView
   },
   'grid-view': {
     config: {
